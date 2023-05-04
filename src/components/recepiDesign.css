@@ -26,12 +26,22 @@ body {
   justify-content: center
   
 }
+.incrementalnputs{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 98%;
+  margin-right: 0.5rem;
+  align-items: center;
+  z-index: 3;
+  box-shadow: 2 1  #1f1919;
+  justify-content: space-evenly
+}
 .in-container2 {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   width: 98%;
-  margin-right: 0.8rem;
   align-items: center;
   z-index: 3;
   box-shadow: 2 1  #1f1919;
@@ -76,6 +86,7 @@ body {
   border-top: 20px solid rgb(40, 20, 7) ;
   border-bottom:20px solid rgb(40, 20, 7) ;
   border-radius: 15px;
+  margin-bottom: 2rem;
 }
 .totals2 {
   display:flex;
@@ -90,6 +101,7 @@ body {
   border-bottom: 20px solid rgb(62, 58, 55) ;
   border-left: 10px solid rgb(40, 20, 7) ;
   border-radius: 15px;
+  margin-bottom: 2rem;
 }
 .recipe {
   flex-basis: 60.33%;
@@ -99,6 +111,7 @@ body {
   border-left: 12px solid rgb(101, 47, 6);
   border-top-right-radius: 15px;
   border-top-left-radius: 15px;
+  
  
 }
 
@@ -119,14 +132,15 @@ body {
   border: 2px solid  #211e06;
   margin:0.15rem;
   padding: 0.14rem;
-  font-size: 0.9rem;
-  font-weight: 700;
+  font-size: 1.2rem;
+  font-weight: 900;
   border-radius: 5px;
   background: rgb(101, 47, 6);
   z-index: 7;
-  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 2px 2px 4px rgba(57, 46, 30, 0.507);
   background-image: 
-      repeating-linear-gradient(25deg, #281b05,rgb(101, 47, 6)10px,rgb(101, 47, 6)10px, rgb(101, 47, 6) 20px);
+      repeating-linear-gradient(25deg, #c4b9a6,rgb(101, 47, 6)10px,rgb(65, 55, 48)10px, rgb(101, 47, 6) 20px),
+      repeating-linear-gradient(-25deg, #c4b9a6,rgb(101, 47, 6)10px,rgb(101, 47, 6)10px, rgb(101, 47, 6) 20px);
          
 }
 .items{
@@ -150,7 +164,7 @@ body {
   margin: 0.3rem;
   border-radius: 5px;
   font-weight: 500;
-  box-shadow: -2px 3px 3px rgb(50, 2, 89);
+  box-shadow: -2px 1px 3px rgba(50, 2, 89, 0.644);
 
 }
 .item2{

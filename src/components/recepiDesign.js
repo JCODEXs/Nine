@@ -180,14 +180,16 @@ setQuantity(quantity)
          
         </div>
         <h4>Ajustar cantidades</h4>
-          {recipeList?.map((item, index) => {
-            return (
-              <div style={{display:"flex",flexDirection:"row",alignItems: "center"}} key={index} >
-              <div className="item" style={{margin:"0.3rem"}}  onClick={()=>removeItem(item)}>{item.name} </div><button className="button" onClick={() => increase(index,item.units)}>+</button>{}
-                <button className="button" onClick={() => decrease(index,item.units)}>-</button>{" "}
-              { <div className="in-container"> <div className="item2">{quantity[index]}</div> <div className="baseMarc">{item.units}</div></div>}</div>
-            );
-          })}
+          <div className="incrementalnputs">
+            {recipeList?.map((item, index) => {
+              return (
+                <div style={{display:"flex",flexDirection:"row",alignItems: "center"}} key={index} >
+                <div className="item" style={{margin:"0.3rem"}}  onClick={()=>removeItem(item)}>{item.name} </div><button className="button" onClick={() => increase(index,item.units)}>+</button>{}
+                  <button className="button" onClick={() => decrease(index,item.units)}>-</button>{" "}
+                { <div className="in-container"> <div className="item2">{quantity[index]}</div> <div className="baseMarc">{item.units}</div></div>}</div>
+              );
+            })}
+          </div>
         </div>
       </div>
       <div id="description" className="description">
