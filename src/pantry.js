@@ -4,7 +4,7 @@ import { devtools, persist, subscribeWithSelector } from 'zustand/middleware';
 
 const pantry = (set) => ({
   ingredients: [],
-  recipes:[{tittle:"first",ingredients:[{name:{name:"callo",units:"und",image:"🥚",price:"10"},quantity:"10"},{ name:  {name:"weed",units:"und",image:"🥚",price:"10"},quantity:100}],description:"ejemplo"}],
+  recipes:[{tittle:"first",ingredients:[{name:{name:"callo",units:"und",image:"k",price:"1000"},quantity:"10"},{ name:  {name:"weed",units:"und",image:"🥚",price:"10"},quantity:100}],description:"ejemplo"}],
   // draggedTask: null,
   // tasksInOngoing: 0,
   addStoreIngredient: (ingredients) =>
@@ -46,6 +46,7 @@ addStoreRecipe: (_recipe) =>
           store.recipes.push(_recipe);
         } else {
           console.log("updating item", _recipe);
+          alert("modificando")
           store.recipes[index] = _recipe;
         }
       });

@@ -88,7 +88,7 @@ export default function Form({setIngredients}) {
                 required
               />
               {formFields.length > 1 && (
-                <button type="button" onClick={() => handleRemoveField(index)}>
+                <button className="button" type="button" onClick={() => handleRemoveField(index)}>
                   X
                 </button>
               )}

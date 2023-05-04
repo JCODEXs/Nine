@@ -185,7 +185,7 @@ setQuantity(quantity)
               <div style={{display:"flex",flexDirection:"row",alignItems: "center"}} key={index} >
               <div className="item" style={{margin:"0.3rem"}}  onClick={()=>removeItem(item)}>{item.name} </div><button className="button" onClick={() => increase(index,item.units)}>+</button>{}
                 <button className="button" onClick={() => decrease(index,item.units)}>-</button>{" "}
-              { <div className="in-container"> <div className="item2">{quantity[index]}</div> <div>{item.units}</div></div>}</div>
+              { <div className="in-container"> <div className="item2">{quantity[index]}</div> <div className="baseMarc">{item.units}</div></div>}</div>
             );
           })}
         </div>
@@ -210,11 +210,11 @@ setQuantity(quantity)
         total+=ingredient.name.price*ingredient.quantity/min[ingredient.name.units];
      return(
         <div className="in-container" key={ingredient.tittle}>
-  <div className="item2">{ingredient.name.image} </div>
-  <div className="item2">{ingredient.name.name} </div>
-  <div className="item2">{ingredient.quantity} </div>
-  <div className="item">{ingredient.name.units} </div>
-  <div className="item2">{ingredient.name.price*ingredient.quantity/min[ingredient.name.units]} </div>
+  <div className="item2">{ingredient.name.image} {ingredient.name.name}</div>
+  {/* <div className="item2"> {ingredient.name.name}</div> */}
+  <div className="item">{ingredient.quantity} {ingredient.name.units} </div>
+  <div className="baseMarc"> =</div>
+  <div className="itemTotal">{ingredient.name.price*ingredient.quantity/min[ingredient.name.units]} </div>
         </div>
       )})}
       <div className="itemTotal">Costo Total:<div className="item2">{total}</div> </div>
@@ -238,11 +238,11 @@ setQuantity(quantity)
         {recipe?.ingredients?.map((ingredient)=>{
           total+=ingredient.name.price*ingredient.quantity/min[ingredient.name.units];
           return(<div className="in-container" key={ingredient.name.name}>
-         <div className="item2">{ingredient.name.image} </div>
-         <div className="item2">{ingredient.name.name} </div>
-         <div className="item2">{ingredient.quantity} </div>
-         <div className="item">{ingredient.name.units} </div>
-         <div className="item2">{ingredient.name.price*ingredient.quantity/min[ingredient.name.units]}  </div>
+         <div className="item2">{ingredient.name.image}{ingredient.name.name} </div>
+         {/* <div className="item2">{ingredient.name.name} </div> */}
+         <div className="item">{ingredient.quantity} </div>
+         <div className="baseMarc">{ingredient.name.units} = </div>
+         <div className="itemTotal">{ingredient.name.price*ingredient.quantity/min[ingredient.name.units]}  </div>
                </div>
       )})}
        <div className="itemTotal">Costo Total:<div className="item2">{total}</div> </div>

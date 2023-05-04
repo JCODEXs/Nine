@@ -11,7 +11,7 @@ body {
   width: 98%;
   margin-left: 0.5rem;
   margin-bottom: 0.5rem;
-  align-items: flex-start;
+  align-items: stretch;
   justify-content: space-evenly
 }
 .in-container {
@@ -42,9 +42,11 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 60%;
+  width: 90%;
   /* background: #1c0b0b; */
   min-width: 200px;
+  max-width: 600px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .ingredients {
@@ -118,8 +120,14 @@ body {
   margin:0.15rem;
   padding: 0.14rem;
   font-size: 0.9rem;
+  font-weight: 700;
   border-radius: 5px;
   background: rgb(101, 47, 6);
+  z-index: 7;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  background-image: 
+      repeating-linear-gradient(25deg, #281b05,rgb(101, 47, 6)10px,rgb(101, 47, 6)10px, rgb(101, 47, 6) 20px);
+         
 }
 .items{
   border: 2px solid  #1f4a39;
@@ -142,12 +150,14 @@ body {
   margin: 0.3rem;
   border-radius: 5px;
   font-weight: 500;
+  box-shadow: -2px 3px 3px rgb(50, 2, 89);
 
 }
 .item2{
    padding: 0.3rem;
   margin: 0.3rem;
   border-radius: 5px;
+  box-shadow: 4px 3px 6px rgba(0, 0, 0, 0.583);
 }
 .itemTotal{
   padding: 0.3rem;
@@ -155,7 +165,8 @@ body {
   border-radius: 5px;
   align-items: flex-end;
   color:#9f2121;
-  justify-content: flex-end
+  justify-content: flex-end;
+  box-shadow: 2px 2px 4px rgba(85, 8, 8, 0.659);
 }
 
 .textRecipe{
@@ -179,6 +190,7 @@ body {
 input{
   background:#f3ecec;
   border-radius: 5px;
+  font-size: 1.4rem;
 }
 
 .background{
@@ -220,4 +232,8 @@ filter: grayscale(100%) brightness(120%) sepia(20%);
   justify-content: space-around;
   align-content: center
   
+}
+.baseMarc{
+  font-weight: 700;
+  margin: 0.2rem;
 }
