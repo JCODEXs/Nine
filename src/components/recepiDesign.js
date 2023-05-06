@@ -249,7 +249,7 @@ setPortions(recipe.portions)
   {/* <div className="item2"> {ingredient.name.name}</div> */}
   <div className="item">{ingredient.quantity} {ingredient.name.units} </div>
   <div className="baseMarc"> =</div>
-  <div className="itemTotal">${(ingredient.name.grPrice*ingredient.quantity.toFixed(0))} </div>
+  <div className="itemTotal">${(ingredient.name.grPrice*ingredient.quantity).toFixed(0)} </div>
         </div>
       )})}
       <div className="itemTotal">Costo Total:
