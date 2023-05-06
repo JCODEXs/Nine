@@ -26,6 +26,18 @@ body {
   justify-content: center
   
 }
+.in-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  width: 98%;
+  margin-right: 0.5rem;
+  align-items: center;
+  z-index: 3;
+  box-shadow: 2 1  #1f1919;
+  justify-content: center
+  
+}
 .incrementalnputs{
   display: flex;
   flex-direction: row;
@@ -141,7 +153,20 @@ body {
   background-image: 
       repeating-linear-gradient(25deg, #c4b9a6,rgb(101, 47, 6)10px,rgb(65, 55, 48)10px, rgb(101, 47, 6) 20px),
       repeating-linear-gradient(-25deg, #c4b9a6,rgb(101, 47, 6)10px,rgb(101, 47, 6)10px, rgb(101, 47, 6) 20px);
-         
+}
+.buttonDisabled{
+  border: 2px solid  #211e06;
+  margin:0.15rem;
+  padding: 0.14rem;
+  font-size: 1.2rem;
+  font-weight: 900;
+  border-radius: 5px;
+  background: rgb(96, 89, 83);
+  z-index: 7;
+  box-shadow: 2px 2px 4px rgba(57, 46, 30, 0.507);
+  background-image: 
+            repeating-linear-gradient(-25deg, #c4b9a6,rgb(135, 118, 105)10px,rgb(34, 30, 26)10px, rgb(208, 193, 181) 20px);
+ 
 }
 .items{
   border: 2px solid  #1f4a39;
@@ -155,6 +180,17 @@ body {
   background: #1f1919;
   z-index: -1;
   
+}
+.itemQ {
+  
+  border: 1px solid  #393434;
+  padding: 0.3rem;
+  background: #716b6b;
+  margin: 0.3rem;
+  border-radius: 5px;
+  font-weight: 500;
+  box-shadow: -2px 1px 3px rgba(50, 2, 89, 0.644);
+
 }
 
 .item{
