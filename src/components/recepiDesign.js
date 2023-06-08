@@ -5,8 +5,11 @@ import Form from "./ingredientsDatabase";
 import { usePantry } from "@/pantry";
 import { shallow } from 'zustand/shallow';
 import trash from '../assets/trash-2.svg';
+//import { getStaticProps } from "@/app/api/mongoDb";
+//import { run } from "@/app/api/hello/mongoping";
+
 export default function DesignRecipe() {
-  const [ingredients, setIngredients] = useState([{name:"huevo",units:"und",image:"🥚",price:450,grPrice:450 }, {name:"harina",units:"gr",image:"🍚",price:500,grPrice:0.5}]);
+  const [ingredients, setIngredients] = useState([{name:"huevo",units:"und",image:"🥚",price:450,grPrice:450 }, {name:"harina",units:"gr",image:"🍚",price:500,grPrice:5}]);
   const [ingredientsList,setIngredientsList]=useState(ingredients)
   const [recipeList, setRecipeList] = useState([]);
   const [quantity, setQuantity] = useState([0]);
@@ -16,11 +19,14 @@ export default function DesignRecipe() {
   const [addIngredient,setAddIngredient]=useState(false)
   const [recipes, setRecipes] = useState([]);
   const [descriptionValue, setDescriptionValue] = useState("");
-  const [deleteMode,setDeleteMode]=useState(false)
+  const [deleteMode,setDeleteMode]=useState("chose")
+  const [editableIngredient,setEditableIngredient]=useState();
   const [isDisabled,setIsDisabled]=useState(false)
   const min={"gr":50,"und":1,"tbsp":1,"ml":50,"GR":100,"Ml":100}
   const {addStoreIngredient,addStoreRecipe,deleteRecipe,deleteIngredient}=usePantry()
- 
+//  const dbIngredients=getStaticProps()
+//run()
+console.log(deleteMode)
   let total=0;
 
   const storeIngredients = usePantry(
@@ -96,13 +102,19 @@ setPortions(recipe.portions)
    
   };
   const addToRecipe = (item) => {
-    if(deleteMode){
+    if(deleteMode=="delete"){
       deleteIngredient(item.name)
-    } else{
+    } 
+    if(deleteMode=="chose"){
 
       setRecipeList((prev) => [...prev, item]);
       const filter= ingredientsList.filter((recipe)=>recipe.name !== item.name)
       setIngredientsList(filter)
+    }
+    if(deleteMode=="edit"){
+      setEditableIngredient(item)
+      setAddIngredient(true)
+      //console.log(item)
     }
   };
   const removeItem= (item)=>{
@@ -157,7 +169,7 @@ setPortions(recipe.portions)
       return newQuantity;
     });
   };
-
+console.log(deleteMode)
   return (
     <div className="out-container">
     <div className="background" >Salimos</div>
@@ -165,7 +177,7 @@ setPortions(recipe.portions)
       <div id="+ingredientes" className="ingredients">
         <h3 onClick={()=>setAddIngredient(!addIngredient)}>+ Ingrediente</h3>
         <div>
-        <div>{addIngredient&& <Form setIngredients={setIngredients}/>}</div>
+        <div>{addIngredient&& <Form key={editableIngredient?.name} setIngredients={setIngredients} editableIngredient={editableIngredient}/>}</div>
           <div>
             <input
               type="text"
@@ -175,7 +187,7 @@ setPortions(recipe.portions)
               />
             🔎
           </div>
-            <div className="backGuide" onClick={()=>setDeleteMode(!deleteMode)}> {!deleteMode?<div>Elegir ingredientes</div>:<div style={{color:"red"}}>Eliminar Ingredientes</div> } </div>
+            <div className="backGuide" onClick={()=> deleteMode!="chose"? deleteMode=="delete"  ? setDeleteMode("chose"): setDeleteMode("delete"):setDeleteMode("edit")}> {deleteMode!="chose"? deleteMode=="delete" ? <div style={{color:"red"}}>eliminar ingredientes</div>:<div style={{color:"blue"}}>Editar Ingredientes</div>:<div style={{color:"green"}}>Elegir Ingredientes</div> } </div>
           <div className="items">
            
             {ingredientsList?.map((item, index) => {
@@ -216,8 +228,8 @@ setPortions(recipe.portions)
             {recipeList?.map((item, index) => {
               return (
                 <div style={{display:"flex",flexDirection:"row",alignItems: "center",flexBasis: "calc(50% - 10px)" }} key={index} >
-                <div className="itemQ" style={{margin:"0.3rem"}}  onClick={()=>removeItem(item)}>{item.name} </div><button className="button" onClick={() => increase(index,item.units)}>+</button>{}
-                  <button className="button" onClick={() => decrease(index,item.units)}>-</button>{" "}
+                <div className="itemQ" style={{margin:"0.3rem"}}  onClick={()=>removeItem(item)}>{item.name} </div><button className="buttonSum" onClick={() => increase(index,item.units)}>+</button>{}
+                  <button className="buttonSum" onClick={() => decrease(index,item.units)}>-</button>{" "}
                 { <div className="in-container"> <div className="item2">{quantity[index]}</div> <div className="baseMarc">{item.units}</div></div>}</div>
               );
             })}

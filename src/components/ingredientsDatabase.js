@@ -1,11 +1,12 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./recepiDesign.css";
 import { usePantry } from "@/pantry";
 const units=["und","tbsp","gr","ml","GR","Ml"]
 const min={"gr":50,"und":1,"tbsp":1,"ml":50,"GR":100,"Ml":100}
 
-export default function Form({setIngredients}) {
+export default function Form({setIngredients,editableIngredient}) {
     const {addStoreIngredient}=usePantry()
+    console.log(editableIngredient)
   const [formFields, setFormFields] = useState([
     { name: '', units: '', image: '', price: '' },
   ]);
@@ -22,10 +23,18 @@ export default function Form({setIngredients}) {
   const handleChange = (index, event) => {
     const { name, value } = event.target;
     const values = [...formFields];
+    console.log(values)
     values[index][name] = value;
     if (values[index].price) {
-        const newPrice = values[index].price/1000;
+      if(values[index].units=="und"){
+        const newPrice = values[index].price;
         values[index].grPrice = newPrice;
+      }
+else{
+
+  const newPrice = values[index].price/1000;
+  values[index].grPrice = newPrice;
+}
         console.log(values)
     }
     
@@ -57,11 +66,18 @@ export default function Form({setIngredients}) {
     
   };
 
+  useEffect(()=>{
+    if(editableIngredient){
+      const editableIngredientCopy = { ...editableIngredient };
+    setFormFields([editableIngredientCopy])}
+    
+  },[editableIngredient])
+
   return (
 
     <div className="out-container">
         <form onSubmit={handleSubmit}>
-          {formFields.map((field, index) => (
+          {formFields?.map((field, index) => (
             <div key={`${index}`}>
               <input
                 type="text"
@@ -101,7 +117,7 @@ export default function Form({setIngredients}) {
               <input
                 type="number"
                 name="price"
-                placeholder="Precio/Kg"
+                placeholder={formFields[index].units!="und"?"Precio/Kg":"Precio/unidad"}
                 value={field.price}
                 onChange={(event) => handleChange(index, event)}
                 required

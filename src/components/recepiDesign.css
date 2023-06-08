@@ -140,6 +140,20 @@ body {
   border-bottom-left-radius: 15px;
 
 }
+.buttonSum{
+  border: 2px solid  #211e06;
+  margin:0.15rem;
+  padding: 0.14rem;
+  font-size: 1.8rem;
+  font-weight: 900;
+  border-radius: 5px;
+  background: rgb(101, 47, 6);
+  z-index: 7;
+  box-shadow: 2px 2px 4px rgba(57, 46, 30, 0.507);
+  background-image: 
+      repeating-linear-gradient(25deg, #c4b9a6,rgb(101, 47, 6)10px,rgb(65, 55, 48)10px, rgb(101, 47, 6) 20px),
+      repeating-linear-gradient(-25deg, #c4b9a6,rgb(101, 47, 6)10px,rgb(101, 47, 6)10px, rgb(101, 47, 6) 20px);
+}
 .button{
   border: 2px solid  #211e06;
   margin:0.15rem;
