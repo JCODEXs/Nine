@@ -26,7 +26,7 @@ export default function Form({setIngredients,editableIngredient}) {
     console.log(values)
     values[index][name] = value;
     if (values[index].price) {
-      if(values[index].units=="und"){
+      if(values[index].units=="und"||values[index].units=="tbsp"){
         const newPrice = values[index].price;
         values[index].grPrice = newPrice;
       }
@@ -58,11 +58,17 @@ console.log(formFields)
     event.preventDefault();
     setIngredients((prev)=>[...prev,...formFields])
    //addStoreIngredient(formFields)
-   addIngredient(formFields[0])
+   if(!editableIngredient){
+
+     addIngredient(formFields[0])
+    }
+    else{
+  addStoreIngredient(formFields) 
+    }
     console.log(formFields);
     setFormFields([
-        { name: '', units: '', image: '', price: '' },
-      ])
+      { name: '', units: '', image: '', price: '' },
+     ])
      
     
   };
@@ -118,7 +124,7 @@ console.log(formFields)
               <input
                 type="number"
                 name="price"
-                placeholder={formFields[index].units!="und"?"Precio/Kg":"Precio/unidad"}
+                placeholder={formFields[index].units!="und"?formFields[index].units!="tbsp"?"Precio/Kg":"Precio/unidad":"Precio/unidad"}
                 value={field.price}
                 onChange={(event) => handleChange(index, event)}
                 required
