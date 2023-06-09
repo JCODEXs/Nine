@@ -4,13 +4,12 @@ import styles from "./recepiDesign.css";
 import Form from "./ingredientsDatabase";
 import { usePantry } from "@/pantry";
 import { shallow } from 'zustand/shallow';
-import trash from '../assets/trash-2.svg';
-//import { getStaticProps } from "@/app/api/mongoDb";
-//import { run } from "@/app/api/hello/mongoping";
+import { getRecipes,getIngredients } from "@/pantry";
+
 
 export default function DesignRecipe() {
-  const [ingredients, setIngredients] = useState([{name:"huevo",units:"und",image:"🥚",price:450,grPrice:450 }, {name:"harina",units:"gr",image:"🍚",price:500,grPrice:5}]);
-  const [ingredientsList,setIngredientsList]=useState(ingredients)
+  const [ingredients, setIngredients] = useState()//[{name:"huevo",units:"und",image:"🥚",price:450,grPrice:450 }, {name:"harina",units:"gr",image:"🍚",price:500,grPrice:5}]);
+  const [ingredientsList,setIngredientsList]=useState([])
   const [recipeList, setRecipeList] = useState([]);
   const [quantity, setQuantity] = useState([0]);
   const [tittle,setTittle]=useState("")
@@ -40,18 +39,38 @@ console.log(deleteMode)
 useLayoutEffect(()=>{
 validateForm()
 },[tittle,portions,recipeList])
-  
-  useEffect(()=>{
-    setRecipes(storeRecipes[0])
-    addStoreIngredient(ingredients)
-    console.log(storeRecipes)
-  },[])
-  useEffect(()=>{
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const recipes = await getRecipes();
+      const ingredients = await getIngredients();
+      setIngredients([...ingredients]);
+      setIngredientsList(ingredients)
+      console.log(ingredients);
+    
+   
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-    setIngredientsList(storeIngredients)
-   // addStoreIngredient(totalIngredients)
-    console.log(storeIngredients)
-  },[storeIngredients])
+  fetchData();
+
+}, [storeIngredients]);
+
+  useEffect(()=>{
+   
+      addStoreIngredient([...ingredientsList])
+    
+    setRecipes(storeRecipes[0])
+  
+    console.log(recipes,storeRecipes)
+  },[ingredientsList])
+  // useEffect(()=>{
+
+  //   setIngredientsList(ingredients)
+  //     // console.log(storeIngredients)
+  // },[storeIngredients])
 
   const setSearch = () => {
     const searchValue = searchRef.current.value;
@@ -87,7 +106,7 @@ setPortions(recipe.portions)
   const addToRecipeList = () => {
     const ingredients=[];
     recipeList.map((item,index)=>{
-      const newIngredient = { name: item, quantity: quantity[index] };
+      const newIngredient = {key:index, name: item, quantity: quantity[index] };
       ingredients.push(newIngredient)
      
     })
@@ -98,17 +117,21 @@ setPortions(recipe.portions)
    setDescriptionValue("")
    setQuantity([])
    setIngredientsList(storeIngredients)
+   
    setPortions(0)
    
   };
   const addToRecipe = (item) => {
+    //console.log(item._id)
     if(deleteMode=="delete"){
-      deleteIngredient(item.name)
+      deleteIngredient(item._id)
+      const filter= ingredientsList.filter((ingredient)=>ingredient._id !== item._id)
+      setIngredientsList(filter)
     } 
     if(deleteMode=="chose"){
 
       setRecipeList((prev) => [...prev, item]);
-      const filter= ingredientsList.filter((recipe)=>recipe.name !== item.name)
+      const filter= ingredientsList.filter((ingredient)=>ingredient.ingredient.name !== item.ingredient.name)
       setIngredientsList(filter)
     }
     if(deleteMode=="edit"){
@@ -118,14 +141,14 @@ setPortions(recipe.portions)
     }
   };
   const removeItem= (item)=>{
-    if(ingredientsList.some((recipe)=>recipe.name === item.name)){
-      const filter= recipeList.filter((recipe)=>recipe.name !== item.name)
+    if(ingredientsList.some((ingredient)=>ingredient.ingredient.name === item.ingredient.name)){
+      const filter= recipeList.filter((ingredient)=>ingredient.ingredient.name !== item.ingredient.name)
       console.log(recipeList,"filter",filter,item)
       setRecipeList(filter)
     }
     else {
       setIngredientsList((prev) => [...prev, item]);
-   const filter= recipeList.filter((recipe)=>recipe.name !== item.name)
+   const filter= recipeList.filter((ingredient)=>ingredient.ingredient.name !== item.ingredient.name)
    console.log(recipeList,"filter",filter,item)
    setRecipeList(filter)
   }
@@ -136,7 +159,7 @@ setPortions(recipe.portions)
     } else {
       setIsDisabled(false);
     }
-    console.log(isDisabled,recipeList.length>1,+portions,tittle,tittle.trim() === "")
+  ///  console.log(isDisabled,recipeList.length>1,+portions,tittle,tittle.trim() === "")
   };
   const increase = (index,units) => {
 
@@ -149,7 +172,7 @@ setPortions(recipe.portions)
       else{
         newQuantity[index]= 0+min[units];
       }
-      console.log(newQuantity)
+     // console.log(newQuantity)
       return newQuantity;
     });
   };
@@ -169,7 +192,7 @@ setPortions(recipe.portions)
       return newQuantity;
     });
   };
-console.log(deleteMode)
+//console.log(deleteMode)
   return (
     <div className="out-container">
     <div className="background" >Salimos</div>
@@ -177,7 +200,7 @@ console.log(deleteMode)
       <div id="+ingredientes" className="ingredients">
         <h3 onClick={()=>setAddIngredient(!addIngredient)}>+ Ingrediente</h3>
         <div>
-        <div>{addIngredient&& <Form key={editableIngredient?.name} setIngredients={setIngredients} editableIngredient={editableIngredient}/>}</div>
+        <div>{addIngredient&& <Form  setIngredients={setIngredients} editableIngredient={editableIngredient} key={editableIngredient?.name}/>}</div>
           <div>
             <input
               type="text"
@@ -193,7 +216,7 @@ console.log(deleteMode)
             {ingredientsList?.map((item, index) => {
               return (
                 <div className="item" key={index} onClick={() => addToRecipe(item)}>
-                  {item.image}
+                  {item.ingredient.image}
                 </div>
               );
             })}
@@ -228,9 +251,9 @@ console.log(deleteMode)
             {recipeList?.map((item, index) => {
               return (
                 <div style={{display:"flex",flexDirection:"row",alignItems: "center",flexBasis: "calc(50% - 10px)" }} key={index} >
-                <div className="itemQ" style={{margin:"0.3rem"}}  onClick={()=>removeItem(item)}>{item.name} </div><button className="buttonSum" onClick={() => increase(index,item.units)}>+</button>{}
-                  <button className="buttonSum" onClick={() => decrease(index,item.units)}>-</button>{" "}
-                { <div className="in-container"> <div className="item2">{quantity[index]}</div> <div className="baseMarc">{item.units}</div></div>}</div>
+                <div className="itemQ" style={{margin:"0.3rem"}}  onClick={()=>removeItem(item)}>{item.ingredient.name} </div><button className="buttonSum" onClick={() => increase(index,item.ingredient.units)}>+</button>{}
+                  <button className="buttonSum" onClick={() => decrease(index,item.ingredient.units)}>-</button>{" "}
+                { <div className="in-container"> <div className="item2">{quantity[index]}</div> <div className="baseMarc">{item.ingredient.units}</div></div>}</div>
               );
             })}
           </div>
@@ -256,7 +279,7 @@ console.log(deleteMode)
       {recipes?.ingredients?.map((ingredient)=>{
         total+=ingredient.name.grPrice*ingredient.quantity;
      return(
-        <div className="in-container" key={ingredient.tittle}>
+        <div className="in-container" key={ingredient.name}>
   <div className="item2">{ingredient.name.image} {ingredient.name.name}</div>
   {/* <div className="item2"> {ingredient.name.name}</div> */}
   <div className="item">{ingredient.quantity} {ingredient.name.units} </div>
@@ -278,7 +301,7 @@ console.log(deleteMode)
     storeRecipes.map((recipe)=>{
   total=0;
       return (<div className="totals2" key={recipe.tittle} onClick={()=>editRecipe(recipe)} > Recetas anteriores
-      <div id="totals" key={recipe.tittle}>
+      <div id="totals" >
         {/* <div className="sub-tittle">Receta</div> */}
       <div className="tittle">{recipe.tittle}</div> 
       <div style={{fontSize:"1.25rem", display:"flex",justifyContent:"flex-end",borderRadius:8,marginRight:"1rem",marginBottom:"0.6rem"}}>{recipe?.portions}👤</div>
@@ -286,9 +309,9 @@ console.log(deleteMode)
       🗑
           </div>
       <div className="in-container2">
-        {recipe?.ingredients?.map((ingredient)=>{
+        {recipe?.ingredients?.map((ingredient,index)=>{
           total+=ingredient.name.grPrice*ingredient.quantity;
-          return(<div className="in-container" key={ingredient.name.name}>
+          return(<div className="in-container" key={index}>
          <div className="item2">{ingredient.name.image}{ingredient.name.name} </div>
          {/* <div className="item2">{ingredient.name.name} </div> */}
          <div className="item">{ingredient.quantity} </div>

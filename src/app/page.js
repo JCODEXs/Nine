@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <main className={styles.main}>
 
-<DesignRecipe/>
+  <DesignRecipe key={Math.random(2)}/>
 
     </main>
   )

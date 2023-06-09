@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./recepiDesign.css";
-import { usePantry } from "@/pantry";
+import { usePantry,addIngredient } from "@/pantry";
 const units=["und","tbsp","gr","ml","GR","Ml"]
 const min={"gr":50,"und":1,"tbsp":1,"ml":50,"GR":100,"Ml":100}
 
@@ -54,10 +54,11 @@ else{
   };
 
   const handleSubmit = (event) => {
-
+console.log(formFields)
     event.preventDefault();
     setIngredients((prev)=>[...prev,...formFields])
-   addStoreIngredient(formFields)
+   //addStoreIngredient(formFields)
+   addIngredient(formFields[0])
     console.log(formFields);
     setFormFields([
         { name: '', units: '', image: '', price: '' },
@@ -68,7 +69,7 @@ else{
 
   useEffect(()=>{
     if(editableIngredient){
-      const editableIngredientCopy = { ...editableIngredient };
+      const editableIngredientCopy = { ...editableIngredient.ingredient };
     setFormFields([editableIngredientCopy])}
     
   },[editableIngredient])

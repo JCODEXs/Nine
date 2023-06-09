@@ -16,7 +16,7 @@ export async function POST(req,res) {
     //     .json({ id: req.query.id, files: await getFiles(req.query.id) });
     //   break;
   
-      const result = await db.collection('ingredients').insertOne(body);
+      const result = await db.collection('recipes').insertOne(body);
   //    console.log(result);
     return NextResponse.json({result})
       // res.status(404).json({});
@@ -28,8 +28,8 @@ export async function POST(req,res) {
     const db=cached.conn.db
   
     
-        const result = await db.collection('ingredients').find().toArray();
-       // console.log(result);
+        const result = await db.collection('recipes').find().toArray();
+        //console.log(result);
         return NextResponse.json({result})
         // res.status(404).json({});
   

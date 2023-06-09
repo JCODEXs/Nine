@@ -1,7 +1,9 @@
-const { MongoClient } = require("mongodb");
+//const { MongoClient } = require("mongodb");
+import { MongoClient } from "mongodb";
 import { NextResponse } from "next/server";
-const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_CLUSTER_URL}/?retryWrites=true&w=majority`
+import { NextApiResponse } from "next";
 const MONGODB_DB  = "Nine";
+const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_CLUSTER_URL}/?retryWrites=true&w=majority`
 
 if (!uri) {
   throw new Error(
@@ -23,7 +25,7 @@ const connectToDatabase = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     };
-    console.log("conecting")
+  //  console.log("conecting")
   const promise= MongoClient.connect(uri, opts)
       .then((client) => {
         conn.client = client;
@@ -33,18 +35,18 @@ const connectToDatabase = async () => {
       })
       .then((db) => {
         conn.db = db;
-     const   recipes=  db.collection("Recipes")
-        console.log(recipes)
+    //  const   recipes=  db.collection("Recipes")
         cached.conn = conn;
             });
       await promise;
-        console.log(cached)
-      return new NextResponse("hello",cached)
+      //  console.log(promise,cached)
+      return cached
     }
  
 
- async function insertDocument(client, collection, document) {
-  const db = client.db();
+ async function insertDocument( collection, document) {
+  const db= await connectToDatabase()
+  //console.log(db)
 
   const result = await db.collection(collection).insertOne(document);
 
