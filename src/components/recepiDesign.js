@@ -1,12 +1,14 @@
 "use client";
+
 import { useEffect, useRef, useState, useLayoutEffect } from "react";
 import styles from "./recepiDesign.css";
 import Form from "./ingredientsDatabase";
 import { usePantry } from "@/pantry";
 import { shallow } from "zustand/shallow";
 import { getRecipes, getIngredients } from "@/pantry";
+import axios from "axios";
 
-export default function DesignRecipe() {
+export default function DesignRecipe({ persistedData }) {
   const [ingredients, setIngredients] = useState(); //[{name:"huevo",units:"und",image:"🥚",price:450,grPrice:450 }, {name:"harina",units:"gr",image:"🍚",price:500,grPrice:5}]);
   const [ingredientsList, setIngredientsList] = useState([]);
   const [recipeList, setRecipeList] = useState([]);
@@ -16,59 +18,91 @@ export default function DesignRecipe() {
   const searchRef = useRef();
   const [addIngredient, setAddIngredient] = useState(false);
   const [recipes, setRecipes] = useState([]);
-  const [descriptionValue, setDescriptionValue] = useState("");
+  //const [descriptionValue, setDescriptionValue] = useState("");
   const [deleteMode, setDeleteMode] = useState("chose");
   const [editableIngredient, setEditableIngredient] = useState();
   const [isDisabled, setIsDisabled] = useState(false);
   const min = { gr: 50, und: 1, tbsp: 1, ml: 50, GR: 100, Ml: 100 };
-  const { addStoreIngredient, addStoreRecipe, deleteRecipe, deleteIngredient } =
-    usePantry();
+  const {
+    addStoreIngredient,
+    addStoreRecipe,
+    deleteRecipe,
+    deleteIngredient,
+    onRehydrate,
+  } = usePantry();
   //  const dbIngredients=getStaticProps()
   //run()
-  console.log(deleteMode);
+  //console.log(deleteMode);
   let total = 0;
+  const descriptionRef = useRef("");
+  const descriptionValue = descriptionRef.current;
 
   const storeIngredients = usePantry((store) => store.ingredients, shallow);
   const storeRecipes = usePantry((store) => store.recipes, shallow);
   useLayoutEffect(() => {
     validateForm();
   }, [tittle, portions, recipeList]);
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const recipes = await getRecipes();
-  //       const ingredients = await getIngredients();
-  //       setIngredients([...ingredients]);
-  //       setIngredientsList(ingredients)
-  //       console.log(ingredients);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const recipes = await getRecipes();
+        const ingredients = await getIngredients();
+        setIngredients([...ingredients]);
+        setIngredientsList(ingredients);
+        recipes.map((recipe) => {
+          addStoreRecipe(recipe.recipe);
+          // console.log(recipe.recipe);
+        });
+        //console.log(ingredients, recipes);
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   };
+    fetchData();
+  }, []);
 
-  //   fetchData();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Retrieve the persisted data from localStorage
+        const pantryData = localStorage.getItem("pantry");
+        const data = JSON.parse(pantryData);
+        console.log(pantryData, data);
 
-  // }, [storeIngredients]);
+        onRehydrate(data);
+        // Send a GET request to your server-side endpoint, passing the persisted data
+        // const response = await axios.post("/api/persistedstore", {
+        //   pantryData,
+        // });
+        // console.log(response.data);
+        // onRehydrate(data);
+        // Handle the response and set the persisted data received from the server
+      } catch (error) {
+        console.error("Error fetching persisted data:", error);
+      }
+    };
+
+    fetchData();
+  }, [onRehydrate]);
 
   useEffect(() => {
     addStoreIngredient([...ingredientsList]);
 
     setRecipes(storeRecipes[0]);
 
-    console.log(recipes, storeRecipes);
+    //console.log(recipes, storeRecipes);
   }, [ingredientsList]);
-  // useEffect(()=>{
-
-  //   setIngredientsList(ingredients)
-  //     // console.log(storeIngredients)
-  // },[storeIngredients])
+  useEffect(() => {
+    setIngredientsList(storeIngredients);
+    //console.log(storeIngredients);
+  }, [storeIngredients]);
 
   const setSearch = () => {
     const searchValue = searchRef.current.value;
     if (searchValue) {
       const filteredIngredients = ingredientsList.filter((ingredient) =>
-        ingredient.name.includes(searchValue)
+        ingredient.includes(searchValue)
       );
       if (filteredIngredients) {
         setIngredientsList(filteredIngredients);
@@ -86,10 +120,9 @@ export default function DesignRecipe() {
   const editRecipe = (recipe) => {
     setRecipes(recipe);
     setTittle(recipe.tittle);
-    setDescriptionValue(recipe.description);
-    const ingredients = recipe.ingredients.map((ingredient) => {
-      return ingredient.name;
-    });
+    descriptionRef.current = recipe.description;
+    //setDescriptionValue(recipe.description);
+    const ingredients = recipe.ingredients;
     const quantity = recipe.ingredients.map((ingredient) => {
       return ingredient.quantity;
     });
@@ -102,11 +135,9 @@ export default function DesignRecipe() {
   const addToRecipeList = () => {
     const ingredients = [];
     recipeList.map((item, index) => {
-      const newIngredient = {
-        key: index,
-        name: item,
-        quantity: quantity[index],
-      };
+      const newIngredient = { ...item };
+      newIngredient.quantity = quantity[index];
+
       ingredients.push(newIngredient);
     });
     setRecipes({
@@ -116,6 +147,7 @@ export default function DesignRecipe() {
       portions: portions,
     });
     addStoreRecipe({
+      key: Math.random(8) * 10000000,
       ingredients: ingredients,
       description: descriptionValue,
       tittle: tittle,
@@ -123,11 +155,12 @@ export default function DesignRecipe() {
     });
     setRecipeList([]);
     setTittle("");
-    setDescriptionValue("");
+    descriptionRef.current = "";
+    // setDescriptionValue("");
     setQuantity([]);
     setIngredientsList(storeIngredients);
-
-    setPortions(0);
+    console.log(recipeList, ingredients);
+    setPortions(1);
   };
   const addToRecipe = (item) => {
     //console.log(item._id)
@@ -155,21 +188,18 @@ export default function DesignRecipe() {
   const removeItem = (item) => {
     if (
       ingredientsList.some(
-        (ingredient) =>
-          ingredient?.ingredient?.name === item?.ingredient?.name || item.name
+        (ingredient) => ingredient?.ingredient?.name === item?.ingredient?.name // || item.name
       )
     ) {
       const filter = recipeList.filter(
-        (ingredient) =>
-          ingredient?.ingredient?.name !== item?.ingredient?.name || item.name
+        (ingredient) => ingredient?.ingredient?.name !== item?.ingredient?.name
       );
       console.log(recipeList, "filter", filter, item);
       setRecipeList(filter);
     } else {
       setIngredientsList((prev) => [...prev, item]);
       const filter = recipeList.filter(
-        (ingredient) =>
-          ingredient?.ingredient?.name !== item?.ingredient?.name || item.name
+        (ingredient) => ingredient?.ingredient?.name !== item?.ingredient?.name
       );
       console.log(recipeList, "filter", filter, item);
       setRecipeList(filter);
@@ -262,7 +292,7 @@ export default function DesignRecipe() {
                 return (
                   <div
                     className="item"
-                    key={index}
+                    key={item?._id}
                     onClick={() => addToRecipe(item)}
                   >
                     {item.ingredient?.image || item.image}
@@ -307,7 +337,7 @@ export default function DesignRecipe() {
             <h4>Ajustar cantidades</h4>
             <div className="incrementalnputs">
               {recipeList?.map((item, index) => {
-                console.log(item);
+                //  console.log(item);
                 return (
                   <div
                     style={{
@@ -316,33 +346,35 @@ export default function DesignRecipe() {
                       alignItems: "center",
                       flexBasis: "calc(50% - 10px)",
                     }}
-                    key={index}
+                    key={item?._id}
                   >
                     <div
                       className="itemQ"
                       style={{ margin: "0.3rem" }}
                       onClick={() => removeItem(item)}
                     >
-                      {item.ingredient?.name || item.name}{" "}
+                      {item?.ingredient?.name}
                     </div>
                     <button
                       className="buttonSum"
-                      onClick={() => increase(index, item.ingredient?.units)}
+                      onClick={() => increase(index, item?.ingredient?.units)}
                     >
                       +
                     </button>
                     {}
                     <button
                       className="buttonSum"
-                      onClick={() => decrease(index, item.ingredient?.units)}
+                      onClick={() => decrease(index, item?.ingredient?.units)}
                     >
                       -
                     </button>{" "}
                     {
                       <div className="in-container">
                         {" "}
-                        <div className="item2">{quantity[index]}</div>{" "}
-                        <div className="baseMarc">{item.ingredient?.units}</div>
+                        <div className="item2">{quantity?.[index]}</div>{" "}
+                        <div className="baseMarc">
+                          {item?.ingredient?.units}
+                        </div>
                       </div>
                     }
                   </div>
@@ -351,7 +383,7 @@ export default function DesignRecipe() {
             </div>
           </div>
         </div>
-        <div id="description" className="description">
+        <div id="description" className="description" key={"htr5"}>
           <div>
             <textarea
               type="text"
@@ -361,8 +393,10 @@ export default function DesignRecipe() {
                 borderRadius: 8,
                 padding: "0.2rem",
               }}
-              value={descriptionValue}
-              onChange={(e) => setDescriptionValue(e.target.value)}
+              value={descriptionValue.current}
+              onChange={(e) => {
+                descriptionRef.current = e.target.value;
+              }}
             />
           </div>
           <button
@@ -389,19 +423,23 @@ export default function DesignRecipe() {
         </div>
         <div className="in-container2">
           {recipes?.ingredients?.map((ingredient) => {
-            total += ingredient.name.grPrice * ingredient.quantity;
+            console.log(ingredient);
+            total += ingredient?.ingredient?.grPrice * ingredient?.quantity;
             return (
-              <div className="in-container" key={ingredient.name}>
+              <div className="in-container" key={ingredient?._id}>
                 <div className="item2">
-                  {ingredient.name.image} {ingredient.name.name}
+                  {ingredient?.ingredient?.image} {ingredient?.ingredient?.name}
                 </div>
-                {/* <div className="item2"> {ingredient.name.name}</div> */}
+                {/* <div className="item2"> {ingredient?.ingredient?.name}</div> */}
                 <div className="item">
-                  {ingredient.quantity} {ingredient.name.units}{" "}
+                  {ingredient?.quantity} {ingredient?.ingredient?.units}{" "}
                 </div>
                 <div className="baseMarc"> =</div>
                 <div className="itemTotal">
-                  ${(ingredient.name.grPrice * ingredient.quantity).toFixed(0)}{" "}
+                  $
+                  {(
+                    ingredient?.ingredient?.grPrice * ingredient?.quantity
+                  ).toFixed(0)}{" "}
                 </div>
               </div>
             );
@@ -423,7 +461,7 @@ export default function DesignRecipe() {
           </div>
         </div>
         <div className="textRecipe">{recipes?.description} </div>
-        {/* <pre>{JSON.stringify(storeRecipes,null,2)}</pre> */}
+        {/* <pre>{JSON.stringify(storeRecipes, null, 2)}</pre> */}
       </div>
       <div className="ReceipLibrary">
         {storeRecipes.map((recipe) => {
@@ -431,7 +469,7 @@ export default function DesignRecipe() {
           return (
             <div
               className="totals2"
-              key={recipe.tittle}
+              key={recipe.key}
               onClick={() => editRecipe(recipe)}
             >
               {" "}
@@ -459,22 +497,24 @@ export default function DesignRecipe() {
                 </div>
                 <div className="in-container2">
                   {recipe?.ingredients?.map((ingredient, index) => {
-                    total += ingredient.name.grPrice * ingredient.quantity;
+                    total +=
+                      ingredient.ingredient?.grPrice * ingredient.quantity;
                     return (
                       <div className="in-container" key={index}>
                         <div className="item2">
-                          {ingredient.name.image}
-                          {ingredient.name.name}{" "}
+                          {ingredient?.ingredient?.image}
+                          {ingredient?.ingredient?.name}{" "}
                         </div>
-                        {/* <div className="item2">{ingredient.name.name} </div> */}
-                        <div className="item">{ingredient.quantity} </div>
+                        {/* <div className="item2">{ingredient.ingredient?.name} </div> */}
+                        <div className="item">{ingredient?.quantity} </div>
                         <div className="baseMarc">
-                          {ingredient.name.units} ={" "}
+                          {ingredient?.ingredient?.units} ={" "}
                         </div>
                         <div className="itemTotal">
                           $
                           {(
-                            ingredient.name.grPrice * ingredient.quantity
+                            ingredient.ingredient?.grPrice *
+                            ingredient?.quantity
                           ).toFixed(0)}{" "}
                         </div>
                       </div>

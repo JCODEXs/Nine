@@ -2,7 +2,7 @@
 import { MongoClient } from "mongodb";
 const MONGODB_DB = "Nine";
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_CLUSTER_URL}/?retryWrites=true&w=majority`;
-console.log(uri);
+//console.log(uri);
 if (!uri) {
   throw new Error(
     "Please define the MONGODB_URI environment variable inside .env.local"
@@ -22,12 +22,12 @@ const connectToDatabase = async () => {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   };
-  console.log("conecting");
+  // console.log("conecting");
   const promise = MongoClient.connect(uri, opts)
     .then((client) => {
       conn.client = client;
       const db = client.db(MONGODB_DB);
-      console.log(db, "conected");
+      // console.log(db, "conected");
       return db;
     })
     .then((db) => {
@@ -36,7 +36,7 @@ const connectToDatabase = async () => {
       cached.conn = conn;
     });
   await promise;
-  console.log(promise, cached);
+  // console.log(promise, cached);
   return cached;
 };
 
