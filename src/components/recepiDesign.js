@@ -32,7 +32,7 @@ export default function DesignRecipe({ persistedData }) {
   } = usePantry();
  
   const store = usePantry();
-  //let dependency= localStorage?localStorage:null;
+  let dependency= localStorage?localStorage:null;
   useEffect(() => {
     let shouldCheckLocalStorage = true;
     let storedState = null;
@@ -45,7 +45,7 @@ export default function DesignRecipe({ persistedData }) {
     if (shouldCheckLocalStorage && storedState) {
       store.onRehydrate(storedState);
     }
-  }, []);
+  }, [dependency]);
 
   
   let total = 0;
