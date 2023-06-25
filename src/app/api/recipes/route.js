@@ -17,7 +17,7 @@ export async function POST(req,res) {
     //   break;
   
       const result = await db.collection('recipes').insertOne(body);
-  //    console.log(result);
+      console.log(result);
     return NextResponse.json({result})
       // res.status(404).json({});
 
@@ -29,7 +29,7 @@ export async function POST(req,res) {
   
     
         const result = await db.collection('recipes').find().toArray();
-        //console.log(result);
+        console.log(result);
         return NextResponse.json({result})
         // res.status(404).json({});
   

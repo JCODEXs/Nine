@@ -6,7 +6,7 @@ import { devtools, persist, subscribeWithSelector } from 'zustand/middleware';
 
 const pantry = (set) => ({
   ingredients: [],
-  recipes:[{tittle:"first",ingredients:[{name:{name:"tomate",units:"gr",image:"🍅",grPrice:"5"},quantity:"450"},{ name:  {name:"huevo",units:"und",image:"🥚",grPrice:"500"},quantity:4}],description:"ejemplo",portions:3}],
+  recipes:[],//[{tittle:"first",ingredients:[{name:{name:"tomate",units:"gr",image:"🍅",grPrice:"5"},quantity:"450"},{ name:  {name:"huevo",units:"und",image:"🥚",grPrice:"500"},quantity:4}],description:"ejemplo",portions:3}],
   // draggedTask: null,
   // tasksInOngoing: 0,
   addStoreIngredient: (ingredients) =>
@@ -115,7 +115,7 @@ export const addRecipe = async (recipe) => {
   });
   console.log("addRecipe", result.data);
   const { response, data } = result.data;
- 
+  return result.data.result
  };
 
  export const addIngredient= async (ingredient) => {

@@ -39,14 +39,23 @@ console.log(deleteMode)
 useLayoutEffect(()=>{
 validateForm()
 },[tittle,portions,recipeList])
+
 useEffect(() => {
+
   const fetchData = async () => {
+    let recipes
+    let ingredients
     try {
-      const recipes = await getRecipes();
-      const ingredients = await getIngredients();
-      setIngredients([...ingredients]);
-      setIngredientsList(ingredients)
-      console.log(ingredients);
+       recipes = await getRecipes();
+       ingredients = await getIngredients();
+       setIngredients([...ingredients]);
+       setIngredientsList(ingredients)
+       setRecipes([...recipes])
+       console.log(recipes);
+       recipes.map((recipe)=>{
+        addStoreRecipe(recipe)
+      console.log(recipe)
+      })
     
    
     } catch (error) {
@@ -55,8 +64,10 @@ useEffect(() => {
   };
 
   fetchData();
+ 
+}, []);
 
-}, [storeIngredients]);
+
 
   useEffect(()=>{
    
@@ -214,9 +225,10 @@ setPortions(recipe.portions)
           <div className="items">
            
             {ingredientsList?.map((item, index) => {
+              console.log(item)
               return (
                 <div className="item" key={index} onClick={() => addToRecipe(item)}>
-                  {item.ingredient.image}
+                  {item?.ingredient?.image}
                 </div>
               );
             })}
@@ -251,9 +263,9 @@ setPortions(recipe.portions)
             {recipeList?.map((item, index) => {
               return (
                 <div style={{display:"flex",flexDirection:"row",alignItems: "center",flexBasis: "calc(50% - 10px)" }} key={index} >
-                <div className="itemQ" style={{margin:"0.3rem"}}  onClick={()=>removeItem(item)}>{item.ingredient.name} </div><button className="buttonSum" onClick={() => increase(index,item.ingredient.units)}>+</button>{}
+                <div className="itemQ" style={{margin:"0.3rem"}}  onClick={()=>removeItem(item)}>{item?.ingredient?.name} </div><button className="buttonSum" onClick={() => increase(index,item.ingredient.units)}>+</button>{}
                   <button className="buttonSum" onClick={() => decrease(index,item.ingredient.units)}>-</button>{" "}
-                { <div className="in-container"> <div className="item2">{quantity[index]}</div> <div className="baseMarc">{item.ingredient.units}</div></div>}</div>
+                { <div className="in-container"> <div className="item2">{quantity[index]}</div> <div className="baseMarc">{item?.ingredient?.units}</div></div>}</div>
               );
             })}
           </div>
@@ -277,14 +289,15 @@ setPortions(recipe.portions)
    < div style={{display:"flex",justifyContent:"flex-end", marginRight:"1rem",borderRadius:8}} >{recipes?.portions}👤</div>
     <div className="in-container2">
       {recipes?.ingredients?.map((ingredient)=>{
-        total+=ingredient.name.grPrice*ingredient.quantity;
+        console.log(ingredient)
+        total+=ingredient?.name?.ingredient.grPrice*ingredient?.quantity;
      return(
-        <div className="in-container" key={ingredient.name}>
-  <div className="item2">{ingredient.name.image} {ingredient.name.name}</div>
-  {/* <div className="item2"> {ingredient.name.name}</div> */}
-  <div className="item">{ingredient.quantity} {ingredient.name.units} </div>
+        <div className="in-container" key={ingredient?.name?.ingredient}>
+  <div className="item2">{ingredient?.name?.ingredient.image} {ingredient?.name?.ingredient.name}</div>
+  {/* <div className="item2"> {ingredient?.name?.ingredient.name}</div> */}
+  <div className="item">{ingredient?.quantity} {ingredient?.name?.ingredient.units} </div>
   <div className="baseMarc"> =</div>
-  <div className="itemTotal">${(ingredient.name.grPrice*ingredient.quantity).toFixed(0)} </div>
+  <div className="itemTotal">${(ingredient?.name?.ingredient.grPrice*ingredient?.quantity).toFixed(0)} </div>
         </div>
       )})}
       <div className="itemTotal">Costo Total:
@@ -299,6 +312,7 @@ setPortions(recipe.portions)
 <div className="ReceipLibrary">
   {
     storeRecipes.map((recipe)=>{
+      console.log(recipe)
   total=0;
       return (<div className="totals2" key={recipe.tittle} onClick={()=>editRecipe(recipe)} > Recetas anteriores
       <div id="totals" >
@@ -309,14 +323,16 @@ setPortions(recipe.portions)
       🗑
           </div>
       <div className="in-container2">
-        {recipe?.ingredients?.map((ingredient,index)=>{
-          total+=ingredient.name.grPrice*ingredient.quantity;
+        {recipe?.ingredients?.map((ingredientAJ,index)=>{
+          const ingredient = ingredientAJ
+          console.log(ingredient)
+          total+=ingredient?.name?.ingredient?.grPrice*ingredient?.quantity;
           return(<div className="in-container" key={index}>
-         <div className="item2">{ingredient.name.image}{ingredient.name.name} </div>
+         <div className="item2">{ingredient?.name?.ingredient?.image}{ingredient?.name?.ingredient?.name} </div>
          {/* <div className="item2">{ingredient.name.name} </div> */}
-         <div className="item">{ingredient.quantity} </div>
-         <div className="baseMarc">{ingredient.name.units} = </div>
-         <div className="itemTotal">${(ingredient.name.grPrice*ingredient.quantity).toFixed(0)}  </div>
+         <div className="item">{ingredient?.quantity} </div>
+         <div className="baseMarc">{ingredient?.name?.ingredient?.units} = </div>
+         <div className="itemTotal">${(ingredient?.name?.ingredient?.grPrice*ingredient?.quantity).toFixed(0)}  </div>
                </div>
       )})}
        <div className="itemTotal">Costo Total:<div className="item2">${total.toFixed(0)}</div> 
