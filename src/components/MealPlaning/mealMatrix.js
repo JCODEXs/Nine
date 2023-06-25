@@ -180,7 +180,7 @@ const MealMatrix = () => {
           {recipes?.map((recipe) => (
             <div
               draggable="true"
-              key={recipe.id}
+              key={recipe.key}
               onDragStart={(event) => handleDragStart(event, recipe)}
             >
               <div
@@ -194,7 +194,7 @@ const MealMatrix = () => {
                   borderRadius: "3px",
                 }}
               >
-                <RecipeCard recipe={recipe} />
+                <RecipeCard key={recipe.key} recipe={recipe} />
               </div>
             </div>
           ))}

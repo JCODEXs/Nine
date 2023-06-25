@@ -30,17 +30,22 @@ export default function DesignRecipe({ persistedData }) {
     deleteIngredient,
     onRehydrate,
   } = usePantry();
+ 
   const store = usePantry();
+  let dependency= localStorage?localStorage:null;
   useEffect(() => {
-    const storedState =
-      typeof localStorage !== "undefined"
-        ? JSON.parse(localStorage.getItem("pantry"))
-        : null; // Get the stored state from localStorage if available
-
-    if (storedState) {
+    let shouldCheckLocalStorage = true;
+    let storedState = null;
+  
+    if (typeof localStorage !== "undefined") {
+      storedState = JSON.parse(localStorage.getItem("pantry"));
+      shouldCheckLocalStorage = false;
+    }
+  
+    if (shouldCheckLocalStorage && storedState) {
       store.onRehydrate(storedState);
     }
-  }, [localStorage]);
+  }, [dependency]);
 
   //  const dbIngredients=getStaticProps()
   //run()
@@ -426,7 +431,7 @@ export default function DesignRecipe({ persistedData }) {
                 borderRadius: 8,
                 padding: "0.2rem",
               }}
-              value={descriptionValue.current}
+              value={descriptionValue?.current}
               onChange={(e) => {
                 descriptionRef.current = e.target.value;
               }}
@@ -441,61 +446,8 @@ export default function DesignRecipe({ persistedData }) {
           </button>
         </div>
       </div>
-      <div id="totals" className="totals">
-        <div className="sub-tittle">Receta</div>
-        <div className="tittle">{recipes?.tittle}</div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            marginRight: "1rem",
-            borderRadius: 8,
-          }}
-        >
-          {recipes?.portions}👤
-        </div>
-        <div className="in-container2">
-          {recipes?.ingredients?.map((ingredient) => {
-            console.log(ingredient);
-            total += ingredient?.ingredient?.grPrice * ingredient?.quantity;
-            return (
-              <div className="in-container" key={ingredient?._id}>
-                <div className="item2">
-                  {ingredient?.ingredient?.image} {ingredient?.ingredient?.name}
-                </div>
-                {/* <div className="item2"> {ingredient?.ingredient?.name}</div> */}
-                <div className="item">
-                  {ingredient?.quantity} {ingredient?.ingredient?.units}{" "}
-                </div>
-                <div className="baseMarc"> =</div>
-                <div className="itemTotal">
-                  $
-                  {(
-                    ingredient?.ingredient?.grPrice * ingredient?.quantity
-                  ).toFixed(0)}{" "}
-                </div>
-              </div>
-            );
-          })}
-          <div className="itemTotal">
-            Costo Total:
-            <div className="item2">${total.toFixed(0)}</div>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "flex-end",
-                background: "rgb(30,30,30,0.1)",
-                borderRadius: 8,
-                color: "blue",
-              }}
-            >
-              ${(total / recipes?.portions).toFixed(0)} 👤
-            </div>
-          </div>
-        </div>
-        <div className="textRecipe">{recipes?.description} </div>
-        {/* <pre>{JSON.stringify(storeRecipes, null, 2)}</pre> */}
-      </div>
+      
+     
       <div className="ReceipLibrary">
         {storeRecipes.map((recipe) => {
           total = 0;
@@ -533,7 +485,7 @@ export default function DesignRecipe({ persistedData }) {
                     total +=
                       ingredient.ingredient?.grPrice * ingredient.quantity;
                     return (
-                      <div className="in-container" key={index}>
+                      <div className="in-container" key={ingredient._id}>
                         <div className="item2">
                           {ingredient?.ingredient?.image}
                           {ingredient?.ingredient?.name}{" "}
@@ -553,8 +505,8 @@ export default function DesignRecipe({ persistedData }) {
                       </div>
                     );
                   })}
-                  <div className="itemTotal">
-                    Costo Total:<div className="item2">${total.toFixed(0)}</div>
+                  <div key={recipe.key} className="itemTotal">
+                    Costo Total:<div  className="item2">${total.toFixed(0)}</div>
                     <div
                       style={{
                         display: "flex",
@@ -569,7 +521,7 @@ export default function DesignRecipe({ persistedData }) {
                     </div>
                   </div>
                 </div>
-                <div className="textRecipe">{recipe.description} </div>
+                {/* <div className="textRecipe">{recipe.description} </div> */}
               </div>
             </div>
           );
