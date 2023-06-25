@@ -32,17 +32,13 @@ export default function DesignRecipe({ persistedData }) {
   } = usePantry();
  
   const store = usePantry();
+  //let dependency= localStorage?localStorage:null;
   useEffect(() => {
     let shouldCheckLocalStorage = true;
     let storedState = null;
-    
-    let dependency = null;
-    if (typeof localStorage !== "undefined") {
-      dependency = localStorage;
-    }
   
-    if (dependency) {
-      storedState = JSON.parse(dependency.getItem("pantry"));
+    if (typeof localStorage !== "undefined") {
+      storedState = JSON.parse(localStorage.getItem("pantry"));
       shouldCheckLocalStorage = false;
     }
   
@@ -50,24 +46,8 @@ export default function DesignRecipe({ persistedData }) {
       store.onRehydrate(storedState);
     }
   }, []);
-  // let dependency= localStorage?localStorage:null;
-  // useEffect(() => {
-  //   let shouldCheckLocalStorage = true;
-  //   let storedState = null;
-  
-  //   if (typeof localStorage !== "undefined") {
-  //     storedState = JSON.parse(localStorage.getItem("pantry"));
-  //     shouldCheckLocalStorage = false;
-  //   }
-  
-  //   if (shouldCheckLocalStorage && storedState) {
-  //     store.onRehydrate(storedState);
-  //   }
-  // }, [dependency]);
 
-  //  const dbIngredients=getStaticProps()
-  //run()
-  //console.log(deleteMode);
+  
   let total = 0;
   const descriptionRef = useRef("");
   const descriptionValue = descriptionRef.current;
@@ -81,9 +61,9 @@ export default function DesignRecipe({ persistedData }) {
     const fetchData = async () => {
       try {
         const recipes = await getRecipes();
-        // const ingredients = await getIngredients();
-        // setIngredients([...ingredients]);
-        // setIngredientsList(ingredients);
+        const ingredients = await getIngredients();
+        setIngredients([...ingredients]);
+        setIngredientsList(ingredients);
         recipes.map((recipe) => {
           addStoreRecipe(recipe.recipe);
           // console.log(recipe.recipe);
