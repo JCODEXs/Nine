@@ -282,7 +282,7 @@ filter: grayscale(100%) brightness(120%) sepia(20%);
   display: flex;
   position: relative;
   top:80%;
-  left:40%;
+  left:25%;
   justify-content: center;
   align-items: center;
   z-index: 2;

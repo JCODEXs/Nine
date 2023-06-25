@@ -5,7 +5,7 @@ import styles from "./recepiDesign.css";
 import Form from "./ingredientsDatabase";
 import { usePantry } from "@/pantry";
 import { shallow } from "zustand/shallow";
-import { getRecipes, getIngredients } from "@/pantry";
+import { getRecipes, getIngredients, addIngredient } from "@/pantry";
 import axios from "axios";
 
 export default function DesignRecipe({ persistedData }) {
@@ -16,7 +16,7 @@ export default function DesignRecipe({ persistedData }) {
   const [tittle, setTittle] = useState("");
   const [portions, setPortions] = useState();
   const searchRef = useRef();
-  const [addIngredient, setAddIngredient] = useState(false);
+  const [addIngredientModal, setAddIngredientModal] = useState(false);
   const [recipes, setRecipes] = useState([]);
   //const [descriptionValue, setDescriptionValue] = useState("");
   const [deleteMode, setDeleteMode] = useState("chose");
@@ -30,6 +30,18 @@ export default function DesignRecipe({ persistedData }) {
     deleteIngredient,
     onRehydrate,
   } = usePantry();
+  const store = usePantry();
+  useEffect(() => {
+    const storedState =
+      typeof localStorage !== "undefined"
+        ? JSON.parse(localStorage.getItem("pantry"))
+        : null; // Get the stored state from localStorage if available
+
+    if (storedState) {
+      store.onRehydrate(storedState);
+    }
+  }, [localStorage]);
+
   //  const dbIngredients=getStaticProps()
   //run()
   //console.log(deleteMode);
@@ -46,9 +58,9 @@ export default function DesignRecipe({ persistedData }) {
     const fetchData = async () => {
       try {
         const recipes = await getRecipes();
-        const ingredients = await getIngredients();
-        setIngredients([...ingredients]);
-        setIngredientsList(ingredients);
+        // const ingredients = await getIngredients();
+        // setIngredients([...ingredients]);
+        // setIngredientsList(ingredients);
         recipes.map((recipe) => {
           addStoreRecipe(recipe.recipe);
           // console.log(recipe.recipe);
@@ -62,29 +74,29 @@ export default function DesignRecipe({ persistedData }) {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Retrieve the persisted data from localStorage
-        const pantryData = localStorage.getItem("pantry");
-        const data = JSON.parse(pantryData);
-        console.log(pantryData, data);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       // Retrieve the persisted data from localStorage
+  //       const pantryData = localStorage.getItem("pantry");
+  //       const data = JSON.parse(pantryData);
+  //       console.log(pantryData, data);
 
-        onRehydrate(data);
-        // Send a GET request to your server-side endpoint, passing the persisted data
-        // const response = await axios.post("/api/persistedstore", {
-        //   pantryData,
-        // });
-        // console.log(response.data);
-        // onRehydrate(data);
-        // Handle the response and set the persisted data received from the server
-      } catch (error) {
-        console.error("Error fetching persisted data:", error);
-      }
-    };
+  //       onRehydrate(data);
+  //       // Send a GET request to your server-side endpoint, passing the persisted data
+  //       // const response = await axios.post("/api/persistedstore", {
+  //       //   pantryData,
+  //       // });
+  //       // console.log(response.data);
+  //       // onRehydrate(data);
+  //       // Handle the response and set the persisted data received from the server
+  //     } catch (error) {
+  //       console.error("Error fetching persisted data:", error);
+  //     }
+  //   };
 
-    fetchData();
-  }, [onRehydrate]);
+  //   fetchData();
+  // }, [onRehydrate]);
 
   useEffect(() => {
     addStoreIngredient([...ingredientsList]);
@@ -162,6 +174,12 @@ export default function DesignRecipe({ persistedData }) {
     console.log(recipeList, ingredients);
     setPortions(1);
   };
+  const makeBkup = () => {
+    storeIngredients.forEach((ingredient) => {
+      console.log(ingredient);
+      addIngredient(ingredient.ingredient);
+    });
+  };
   const addToRecipe = (item) => {
     //console.log(item._id)
     if (deleteMode == "delete") {
@@ -181,7 +199,7 @@ export default function DesignRecipe({ persistedData }) {
     }
     if (deleteMode == "edit") {
       setEditableIngredient(item);
-      setAddIngredient(true);
+      setAddIngredientModal(true);
       //console.log(item)
     }
   };
@@ -244,12 +262,12 @@ export default function DesignRecipe({ persistedData }) {
       <div className="background">Salimos</div>
       <div className="container">
         <div id="+ingredientes" className="ingredients">
-          <h3 onClick={() => setAddIngredient(!addIngredient)}>
+          <h3 onClick={() => setAddIngredientModal(!addIngredientModal)}>
             + Ingrediente
           </h3>
           <div>
             <div>
-              {addIngredient && (
+              {addIngredientModal && (
                 <Form
                   setIngredients={setIngredients}
                   editableIngredient={editableIngredient}
@@ -279,12 +297,24 @@ export default function DesignRecipe({ persistedData }) {
               {" "}
               {deleteMode != "chose" ? (
                 deleteMode == "delete" ? (
-                  <div style={{ color: "red" }}>eliminar ingredientes</div>
+                  <div
+                    style={{
+                      fontSize: "1.2rem",
+                      color: "red",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    eliminar ingredientes
+                  </div>
                 ) : (
-                  <div style={{ color: "blue" }}>Editar Ingredientes</div>
+                  <div style={{ fontSize: "1.2rem", color: "blue" }}>
+                    Editar Ingredientes
+                  </div>
                 )
               ) : (
-                <div style={{ color: "green" }}>Elegir Ingredientes</div>
+                <div style={{ fontSize: "1.2rem", color: "green" }}>
+                  Elegir Ingredientes
+                </div>
               )}{" "}
             </div>
             <div className="items">
@@ -300,6 +330,9 @@ export default function DesignRecipe({ persistedData }) {
                 );
               })}
             </div>
+            <button className="button" type="button" onClick={() => makeBkup()}>
+              bkup
+            </button>
           </div>
         </div>
 

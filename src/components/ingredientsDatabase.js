@@ -60,8 +60,19 @@ export default function Form({ setIngredients, editableIngredient }) {
     const id = Math.random(10) * 100000000000;
     console.log(formFields);
     event.preventDefault();
-    setIngredients((prev) => [...prev, ...formFields]);
-    addStoreIngredient([{ ingredient: formFields[0], _id: id }]);
+    setIngredients((prev) => {
+      if (!Array.isArray(prev)) {
+        return formFields;
+      }
+      return [...prev, ...formFields];
+    });
+
+    formFields.forEach((ingredient, index) => {
+      const id = Math.random(10) * 100000000000;
+
+      console.log(index, ingredient);
+      addStoreIngredient([{ ingredient: ingredient, _id: id }]);
+    });
     if (!editableIngredient) {
       // addIngredient(formFields[0]);
     } else {

@@ -41,6 +41,7 @@ const pantry = (set) => ({
           if (index === -1) {
             console.log("new item", ingredient);
             store.ingredients.push(ingredient);
+            // addIngredient(ingredient.ingredient);
           } else {
             //  console.log("updating item", ingredient);
             store.ingredients[index] = ingredient;
