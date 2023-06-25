@@ -32,20 +32,38 @@ export default function DesignRecipe({ persistedData }) {
   } = usePantry();
  
   const store = usePantry();
-  let dependency= localStorage?localStorage:null;
   useEffect(() => {
     let shouldCheckLocalStorage = true;
     let storedState = null;
-  
+    
+    let dependency = null;
     if (typeof localStorage !== "undefined") {
-      storedState = JSON.parse(localStorage.getItem("pantry"));
+      dependency = localStorage;
+    }
+  
+    if (dependency) {
+      storedState = JSON.parse(dependency.getItem("pantry"));
       shouldCheckLocalStorage = false;
     }
   
     if (shouldCheckLocalStorage && storedState) {
       store.onRehydrate(storedState);
     }
-  }, [dependency]);
+  }, []);
+  // let dependency= localStorage?localStorage:null;
+  // useEffect(() => {
+  //   let shouldCheckLocalStorage = true;
+  //   let storedState = null;
+  
+  //   if (typeof localStorage !== "undefined") {
+  //     storedState = JSON.parse(localStorage.getItem("pantry"));
+  //     shouldCheckLocalStorage = false;
+  //   }
+  
+  //   if (shouldCheckLocalStorage && storedState) {
+  //     store.onRehydrate(storedState);
+  //   }
+  // }, [dependency]);
 
   //  const dbIngredients=getStaticProps()
   //run()
