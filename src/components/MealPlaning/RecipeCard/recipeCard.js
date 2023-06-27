@@ -1,17 +1,20 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import styles from "./recipeCard.css";
 
-export default function RecipeCard(recipe_) {
+export default function RecipeCard({recipe_, showPortions,getPortions,day}) {
   let total = 0;
-  const recipe = recipe_.recipe;
+  const recipe = recipe_;
   const [portions, setPortions] = useState([]);
-  console.log(recipe_.recipe);
+  useEffect(()=>{
+    getPortions(day,portions,recipe.key)
+  },[portions])
+  console.log(recipe_);
   return (
     <div id="itemTotal">
       {/* <pre>{JSON.stringify(recipe, null, 2)}</pre> */}
       {/* <div className="sub-tittle">Receta</div> */}
       <div className="tittle">{recipe.tittle}</div>
-      <input
+     { showPortions&&<input
         type="number"
         style={{
           width: 100,
@@ -24,7 +27,7 @@ export default function RecipeCard(recipe_) {
         placeholder="pedidos"
         onChange={(e) => setPortions(e.target.value)}
         required
-      />
+      />}
 
       {/* <div
         style={{ display: "flex", justifyContent: "flex-start" }}
@@ -57,12 +60,12 @@ export default function RecipeCard(recipe_) {
           );
         })}
 
-        <div className="itemTotal">
+        <div className="cardTotal">
           {portions}👤
-          {/* </div> */}
+        
           Costo:
           <div className="item2">
-            ${((total / recipe.portions) * portions).toFixed(0)}
+            ${((total / recipe.portions) * (showPortions?portions:1)).toFixed(0)}
           </div>
           {/* <div
             style={{

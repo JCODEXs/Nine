@@ -70,3 +70,10 @@
 .button:active {
     background-color: #097ebd;
 }
+.background{
+    width: 100%;
+    background-image: url("../../assets/830.jpg");
+    background-size: 370px;
+    filter: grayscale(50%) brightness(70%) sepia(50%) contrast(70%);
+   
+  }

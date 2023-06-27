@@ -3,8 +3,8 @@ import styles from "./recepiDesign.css";
 import axios from "axios";
 
 import { usePantry, addIngredient } from "@/pantry";
-const units = ["und", "tbsp", "gr", "ml", "GR", "Ml"];
-const min = { gr: 50, und: 1, tbsp: 1, ml: 50, GR: 100, Ml: 100 };
+const units = ["und", "g", "gr", "Gr","GR","ml","Ml", "ML"];
+const min = { gr: 25, und: 1, g: 1, ml: 25, Ml:50, GR: 100, ML: 100, Gr:50 };
 
 export default function Form({ setIngredients, editableIngredient }) {
   const { addStoreIngredient } = usePantry();
@@ -25,7 +25,7 @@ export default function Form({ setIngredients, editableIngredient }) {
   const handleChange = (index, event) => {
     const { name, value } = event.target;
     const values = [...formFields];
-    console.log(values);
+    console.log(value,name);
     values[index][name] = value;
     if (values[index].price) {
       if (values[index].units == "und" || values[index].units == "tbsp") {
@@ -104,6 +104,26 @@ export default function Form({ setIngredients, editableIngredient }) {
             />
             <input
               type="text"
+              name="image"
+              placeholder="emoji o nombre"
+              value={field.image}
+              onChange={(event) => handleChange(index, event)}
+              required
+            />
+
+              <div style={{padding:"0.3rem"}}>
+                {units.map((unit) => {
+                  return (
+                    <button type="button" className="button" key={unit} value={unit} name={"units"} onClick={(event) => handleChange(index, event)}>
+                      { `${min[unit]}${unit}`}
+                    </button>
+                  );
+                })}
+              </div>
+
+         
+           {/* <input
+              type=""
               name="units"
               list="units"
               placeholder="Unidades"
@@ -111,6 +131,9 @@ export default function Form({ setIngredients, editableIngredient }) {
               onChange={(event) => handleChange(index, event)}
               required
             />
+        
+
+
             <datalist id="units">
               {units.map((unit) => {
                 return (
@@ -119,16 +142,8 @@ export default function Form({ setIngredients, editableIngredient }) {
                   </option>
                 );
               })}
-            </datalist>
+            </datalist> */}
 
-            <input
-              type="text"
-              name="image"
-              placeholder="emoji o nombre"
-              value={field.image}
-              onChange={(event) => handleChange(index, event)}
-              required
-            />
             <input
               type="number"
               name="price"

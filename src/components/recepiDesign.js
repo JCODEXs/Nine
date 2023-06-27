@@ -102,9 +102,10 @@ export default function DesignRecipe({ persistedData }) {
   // }, [onRehydrate]);
 
   useEffect(() => {
+    
     addStoreIngredient([...ingredientsList]);
 
-    setRecipes(storeRecipes[0]);
+    setRecipes(storeRecipes[storeRecipes.length-1]);
 
     //console.log(recipes, storeRecipes);
   }, [ingredientsList]);
@@ -116,19 +117,22 @@ export default function DesignRecipe({ persistedData }) {
   const setSearch = () => {
     const searchValue = searchRef.current.value;
     if (searchValue) {
+    
       const filteredIngredients = ingredientsList.filter((ingredient) =>
-        ingredient.includes(searchValue)
+        ingredient.ingredient.name.includes(searchValue)
       );
       if (filteredIngredients) {
         setIngredientsList(filteredIngredients);
       }
     } else {
       const usedItems = recipeList.map((item) => {
-        return item.name;
+        return item.ingredient.name;
       });
+      
       const filteredIngredients = storeIngredients.filter(
-        (item) => !usedItems.includes(item.name)
+        (item) => !usedItems.includes(item.ingredient.name)
       );
+    
       setIngredientsList(filteredIngredients);
     }
   };
@@ -259,6 +263,9 @@ export default function DesignRecipe({ persistedData }) {
       return newQuantity;
     });
   };
+  function  deleteHandler(recipetittle){
+    const result = window.confirm("¿Estás seguro de que deseas borrar este elemento?");
+  if (result) { deleteRecipe(recipetittle)}}
   //console.log(deleteMode)
   return (
     <div className="out-container">
@@ -341,12 +348,12 @@ export default function DesignRecipe({ persistedData }) {
 
         <div id="recipe" className="recipe">
           <div>
+              <h2>Nueva Receta</h2>
             <div className="out-container">
-              <h2>Definiciones</h2>
               <input
                 type="text"
                 style={{
-                  width: "80%",
+                  width: "70%",
                   height: 30,
                   borderRadius: 8,
                   padding: "0.1rem",
@@ -359,13 +366,13 @@ export default function DesignRecipe({ persistedData }) {
               <input
                 type="number"
                 style={{
-                  width: "20%",
+                  width: "22%",
                   height: 30,
                   borderRadius: 8,
-                  padding: "0.1rem",
+                  padding: "0.2rem",
                 }}
                 value={portions}
-                placeholder="Porciones"
+                placeholder="# 👤"
                 onChange={(e) => setPortions(e.target.value)}
                 required
               />
@@ -473,8 +480,8 @@ export default function DesignRecipe({ persistedData }) {
                   {recipe?.portions}👤
                 </div>
                 <div
-                  style={{ display: "flex", justifyContent: "flex-start" }}
-                  onClick={() => deleteRecipe(recipe.tittle)}
+                  style={{ display: "flex", justifyContent: "flex-start" , fontSize:"1.8rem"}}
+                  onClick={() =>deleteHandler(recipe.tittle) }
                 >
                   🗑
                 </div>
