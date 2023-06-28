@@ -5,9 +5,11 @@ export default function RecipeCard({recipe_, showPortions,getPortions,day}) {
   let total = 0;
   const recipe = recipe_;
   const [portions, setPortions] = useState([]);
-  useEffect(()=>{
+  if(showPortions)
+  {useEffect(()=>{
     getPortions(day,portions,recipe.key)
   },[portions])
+}
   console.log(recipe_);
   return (
     <div id="itemTotal">

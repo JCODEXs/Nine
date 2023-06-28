@@ -1,6 +1,6 @@
 // components/RecetasMatrix.js
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Draggable } from "gsap/all";
 import { usePantry } from "@/pantry";
 import { shallow } from "zustand/shallow";
@@ -11,24 +11,39 @@ const MealMatrix = () => {
   const [recipes, setRecipes] = useState();
   const [dayTotals,setDayTotals]=useState()
 
-  function setProgramPortions(day,portions,recipeID){
-console.log(selectedRecipes)
+  const  setProgramPortions =(day,portions,recipeID)=>{
+
     setSelectedRecipes((prevSelectedRecipes) => {
       console.log(prevSelectedRecipes[day])
-   let recipe= prevSelectedRecipes[day]?.find((recipe)=>recipe.key==recipeID);
-   recipe.realPortions=portions;
-   console.log(recipe)
-   return {
-    ...prevSelectedRecipes,
-    [day]:  recipe ,
-  };
-});
+      const currentRecipes = prevSelectedRecipes[day] ?? [];
+   let modifiedRecipe= currentRecipes.find((recipe)=>recipe.key==recipeID);
+   let restRecipes=currentRecipes.filter((recipe)=>recipe.key!==recipeID);
+   if (modifiedRecipe) {
+    const updatedRecipe = { ...modifiedRecipe, realPortions: portions };
+   console.log(modifiedRecipe)
+   const modifiedIndex = currentRecipes.findIndex((recipe) => recipe.key === recipeID);
+      const newRecipes = [
+        ...currentRecipes.slice(0, modifiedIndex),
+        updatedRecipe,
+      ...currentRecipes.slice(modifiedIndex + 1),
+      ];
+      const updatedSelectedRecipes = {
+        ...prevSelectedRecipes,
+        [day]: newRecipes,
+      };
 
+      return updatedSelectedRecipes;
+}
+else{
+
+  return prevSelectedRecipes
+}
+})
   }
   console.log(selectedRecipes)
 
-  const handleSelectRecipe = (day, recipe) => {
-    console.log(day, recipe);
+  const handleSelectRecipe = (day, _recipe) => {
+    console.log(day, _recipe);
    
     const isRecipeSelected = selectedRecipes[day]?.some((recipe) => {
       return _recipe.key === recipe.key;
@@ -37,7 +52,7 @@ console.log(selectedRecipes)
     if (!isRecipeSelected) {
       setSelectedRecipes((prevSelectedRecipes) => ({
         ...prevSelectedRecipes,
-        [day]: [...(prevSelectedRecipes[day] || []), recipe],
+        [day]: [...(prevSelectedRecipes[day] || []), _recipe],
       }));
     }
   };
@@ -101,6 +116,7 @@ console.log(selectedRecipes)
         totalPrice[key]=0
         selectedRecipes[key].forEach((recipe)=>{
           const porciones= recipe.portions
+          const realPortions=recipe.realPortions
           console.log(recipe.portions)
           recipe.ingredients.map((ingredient) => {
              const ingredientProps=ingredient.ingredient
@@ -108,15 +124,15 @@ console.log(selectedRecipes)
              const { name:nombre, grPrice:precio } = ingredientProps;
              console.log(ingredientProps,nombre,  precio)
              if (ingredientsTotals[nombre]) {
-               ingredientsTotals[nombre].cantidad += cantidad/porciones;
+               ingredientsTotals[nombre].cantidad += (cantidad/porciones)*realPortions;
                ingredientsTotals[nombre].precio +=( precio * cantidad)/porciones;
              } else {
                ingredientsTotals[nombre] = {
-                 cantidad,
-                 precio: (precio * cantidad)/porciones,
+                 cantidad:cantidad*realPortions,
+                 precio: (((precio * cantidad)/porciones)*realPortions)*realPortions,
                };
              }
-             totalPrice[key] += (precio * cantidad)/porciones;
+             totalPrice[key] += ((precio * cantidad)/porciones)*realPortions;
            });
         })
           console.log(totalPrice[key],key)
@@ -129,21 +145,22 @@ console.log(selectedRecipes)
       else{
         totalPrice[key]=0
         selectedRecipes[key]?.[0].ingredients.map((ingredient) => {
+          const realPortions=selectedRecipes[key]?.[0].realPortions
           const porciones= selectedRecipes[key]?.[0]?.portions
           const ingredientProps=ingredient.ingredient
           const cantidad=ingredient.quantity
           const { name:nombre, grPrice:precio } = ingredientProps;
           console.log(ingredientProps,nombre,  precio)
           if (ingredientsTotals[nombre]) {
-            ingredientsTotals[nombre].cantidad += cantidad/porciones;
-            ingredientsTotals[nombre].precio += (precio * cantidad)/porciones;
+            ingredientsTotals[nombre].cantidad += (cantidad/porciones)*realPortions;
+            ingredientsTotals[nombre].precio += ((precio * cantidad)/porciones)*realPortions;
           } else {
             ingredientsTotals[nombre] = {
-              cantidad,
-              precio: (precio * cantidad)/porciones,
+              cantidad:cantidad*realPortions,
+              precio: ((precio * cantidad)/porciones)*realPortions,
             };
           }
-          totalPrice[key] += ((precio * cantidad)/porciones);
+          totalPrice[key] += ((precio * cantidad)/porciones)*realPortions;
         });
         console.log(totalPrice[key],key)
         setDayTotals((prevDaysTotal) => ({
@@ -384,7 +401,7 @@ console.log(selectedRecipes)
                           textAlign: "center",
                         }}
                       >
-                        <RecipeCard recipe_={_selectedRecipe} day={day} showPortions={true} getPortions={setProgramPortions}/>
+                        <RecipeCard key={_selectedRecipe.key} recipe_={_selectedRecipe} day={day} showPortions={true} getPortions={setProgramPortions}/>
                       
                       </div>
                     ))}
