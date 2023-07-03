@@ -136,7 +136,7 @@ const MealMatrix = () => {
     console.log(recipe, dayFrom);
     if (dayFrom && selectedRecipes[dayFrom]) {
       const updatedRecipes = selectedRecipes[dayFrom].filter(
-        (r) => r.id !== recipe.id
+        (r) => r.key !== recipe.key
       );
       setSelectedRecipes((prevSelectedRecipes) => ({
         ...prevSelectedRecipes,
