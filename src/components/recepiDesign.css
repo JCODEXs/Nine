@@ -8,8 +8,8 @@ body {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  width: 98%;
-  margin-left: 0.5rem;
+  width: 100%;
+  margin-left: 0.1rem;
   margin-bottom: 0.5rem;
   align-items: stretch;
   justify-content: space-evenly
@@ -35,7 +35,7 @@ body {
   align-items: center;
   z-index: 3;
   box-shadow: 2 1  #1f1919;
-  justify-content: center
+  justify-content: flex-end
   
 }
 .incrementalnputs{
@@ -74,7 +74,7 @@ body {
 .ingredients {
   flex-basis: 63.33%;
   padding: 20px;
-  background-color: #716b6b;
+  background-color: #b8b0b0;
   border-radius: 15px;
   min-width: 200px;
   border-right: 12px solid rgb(40, 20, 7) ;
@@ -82,7 +82,7 @@ body {
   margin-bottom: 0.7rem;
   border-top-right-radius: 15px;
   border-top: 12px solid rgb(40, 20, 7) ;
-
+  filter: grayscale(20%) brightness(80%) sepia(15%) contrast(92%) opacity(98%);
 
 }
 
@@ -117,13 +117,13 @@ body {
 }
 .recipe {
   flex-basis: 60.33%;
-  padding: 20px;
+  padding:5px;
   background-color: #d0d0d0;
   border-right: 12px solid rgb(101, 47, 6) ;
   border-left: 12px solid rgb(101, 47, 6);
   border-top-right-radius: 15px;
   border-top-left-radius: 15px;
-  
+  filter: grayscale(20%) brightness(80%) sepia(15%) contrast(92%) opacity(98%);
  
 }
 
@@ -138,13 +138,13 @@ body {
   margin-bottom: 1rem;
   border-bottom-right-radius: 15px;
   border-bottom-left-radius: 15px;
-
+  filter: grayscale(20%) brightness(80%) sepia(15%) contrast(92%) opacity(98%);
 }
 .buttonSum{
   border: 2px solid  #211e06;
   margin:0.15rem;
   padding: 0.14rem;
-  font-size: 1.8rem;
+  font-size: 2rem;
   font-weight: 900;
   border-radius: 5px;
   background: rgb(101, 47, 6);
@@ -165,8 +165,22 @@ body {
   z-index: 7;
   box-shadow: 2px 2px 4px rgba(57, 46, 30, 0.507);
   background-image: 
-      repeating-linear-gradient(25deg, #c4b9a6,rgb(101, 47, 6)10px,rgb(65, 55, 48)10px, rgb(101, 47, 6) 20px),
+      repeating-linear-gradient(28deg, #e1be81,rgb(101, 47, 6)10px,rgb(65, 55, 48)10px, rgb(101, 47, 6) 20px),
       repeating-linear-gradient(-25deg, #c4b9a6,rgb(101, 47, 6)10px,rgb(101, 47, 6)10px, rgb(101, 47, 6) 20px);
+}
+.buttonUnits{
+  border: 2px solid  #211e06;
+  margin:0.1rem;
+  padding: 0.12rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 5px;
+  background: rgb(82, 47, 21);
+  z-index: 7;
+  box-shadow: 2px 2px 4px rgba(57, 46, 30, 0.507);
+  background-image: 
+      repeating-linear-gradient(25deg, #352509,rgb(101, 47, 6)10px,rgb(65, 55, 48)10px, rgb(101, 47, 6) 20px),
+      
 }
 .buttonDisabled{
   border: 2px solid  #211e06;

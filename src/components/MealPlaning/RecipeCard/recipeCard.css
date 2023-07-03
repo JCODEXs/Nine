@@ -38,6 +38,7 @@
 }
 
 .in-container2 {
+    padding:0.3rem;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -171,12 +172,25 @@
 }
 
 .item2 {
+    display:flex;
+    position: inherit;
+    bottom: 0;
     padding: 0.3rem;
     margin: 0.3rem;
     border-radius: 5px;
     box-shadow: 4px 3px 6px rgba(0, 0, 0, 0.583);
 }
-
+.cardTotal{
+  position: relative;
+  bottom: 0px;
+    padding: 0.3rem;
+    margin: 0.3rem;
+    border-radius: 5px;
+    align-items: flex-end;
+    color: #9f2121;
+    justify-content: flex-end;
+    box-shadow: 2px 2px 4px rgba(85, 8, 8, 0.659);
+}
 .itemTotal {
     display: flex;
     flex-direction: row;
@@ -206,8 +220,8 @@
 
 .tittle {
     display: flex;
-    font-weight: 700;
-    font-size: 1.2rem;
+    font-weight: 100;
+    font-size: 0.8rem;
     color: #2a2424;
 }
 

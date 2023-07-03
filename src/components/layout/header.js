@@ -1,20 +1,20 @@
 "use client";
 import { Fragment } from "react";
-import classes from "./Header.module.css";
+import classes from "./header.module.css";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 export default function Header(props) {
   const router = useRouter();
   return (
-    <Fragment>
-      <div
-        style={{
+    <Fragment >
+      <div className={classes.background}
+          style={{
           display: "flex",
           justifyContent: "center",
           flexDirection: "column",
           alignItems: "center",
-        }}
+                 }}
       >
         <div id="my-div">
           <div
