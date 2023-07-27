@@ -22,6 +22,7 @@ export default function DesignRecipe({ persistedData }) {
   const [deleteMode, setDeleteMode] = useState("chose");
   const [editableIngredient, setEditableIngredient] = useState();
   const [isDisabled, setIsDisabled] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState(null);
   const min = { gr: 50, und: 1, tbsp: 1, ml: 50, GR: 100, Ml: 100 };
   const {
     addStoreIngredient,
@@ -30,30 +31,31 @@ export default function DesignRecipe({ persistedData }) {
     deleteIngredient,
     onRehydrate,
   } = usePantry();
- 
+
   const store = usePantry();
   //let dependency= localStorage?localStorage:null;
   useEffect(() => {
     let shouldCheckLocalStorage = true;
     let storedState = null;
-  
+
     if (typeof localStorage !== "undefined") {
-      storedState = JSON.parse(localStorage.getItem("pantry"));
+      storedState = JSON.parse(localStorage.getItem("Devtools"));
       shouldCheckLocalStorage = false;
     }
-  
-    if (shouldCheckLocalStorage && storedState) {
+
+    if (storedState) {
       store.onRehydrate(storedState);
     }
-  }, []);
-//}, [dependency]);
-  
+  }, [ingredientsList]);
+  //}, [dependency]);
+
   let total = 0;
   const descriptionRef = useRef("");
   const descriptionValue = descriptionRef.current;
 
   const storeIngredients = usePantry((store) => store.ingredients, shallow);
   const storeRecipes = usePantry((store) => store.recipes, shallow);
+
   useLayoutEffect(() => {
     validateForm();
   }, [tittle, portions, recipeList]);
@@ -66,9 +68,9 @@ export default function DesignRecipe({ persistedData }) {
         setIngredientsList(ingredients);
         recipes.map((recipe) => {
           addStoreRecipe(recipe.recipe);
-          // console.log(recipe.recipe);
+          console.log(recipe.recipe);
         });
-        //console.log(ingredients, recipes);
+        console.log(ingredients, recipes);
       } catch (error) {
         console.error(error);
       }
@@ -102,13 +104,67 @@ export default function DesignRecipe({ persistedData }) {
   // }, [onRehydrate]);
 
   useEffect(() => {
-    
     addStoreIngredient([...ingredientsList]);
 
-    setRecipes(storeRecipes[storeRecipes.length-1]);
+    setRecipes(storeRecipes[storeRecipes.length - 1]);
 
     //console.log(recipes, storeRecipes);
   }, [ingredientsList]);
+
+  const updateRecipes = (recipe) => {
+    const newRecipe = [];
+    const updatedRecipe = recipe.ingredients.forEach((ing, index) => {
+      const actualIngredient = ingredientsList.find((_ing) => {
+        return _ing.ingredient.name === ing.ingredient.name;
+      });
+
+      if (actualIngredient) {
+        newRecipe[index] = actualIngredient; // Update ing properties with actualIngredient
+
+        // addStoreRecipe(recipe); // Update the recipe in storeRecipes
+      } else {
+        newRecipe[index] = ing;
+      }
+    });
+    console.log(recipe, updateRecipes);
+    return newRecipe;
+  };
+
+  // }, []);
+
+  // useEffect(() => {
+  //   let total;
+  //   const updatedRecipes = storeRecipes.map((recipe) => {
+  //     // console.log(recipe, ingredientsList);
+  //     recipe.ingredients.forEach((ing, index) => {
+  //       let newRecipe = { ...recipe };
+  //       const actualIngredient = ingredientsList.find((_ing) => {
+  //         // console.log(_ing, ing);
+  //         // console.log(_ing.ingredient.name == ing.ingredient.name);
+
+  //         return _ing.ingredient.name === ing.ingredient.name;
+  //       });
+  //       const defIngredient = { ...actualIngredient };
+  //       defIngredient.quantity ??= ing.quantity;
+  //       console.log(newRecipe.ingredients, defIngredient);
+  //       const price = actualIngredient?.ingredient.grPrice;
+  //       if (price) {
+  //         newRecipe.ingredients = [
+  //           ...newRecipe.ingredients.slice(0, index),
+  //           defIngredient,
+  //           ...newRecipe.ingredients.slice(index + 1),
+  //         ];
+  //         console.log("def", defIngredient, newRecipe.ingredients);
+  //         // console.log(newRecipe.ingredients);
+  //         addStoreRecipe(newRecipe);
+  //         // setRecipes((prev) => [...prev, { [recipes[index]]: recipe }]);
+  //         total += price * ing.quantity;
+  //       } else {
+  //         // total += ing.ingredient.grPrice * ing.quantity;
+  //       }
+  //     });
+  //   });
+  // }, []);
   useEffect(() => {
     setIngredientsList(storeIngredients);
     //console.log(storeIngredients);
@@ -117,7 +173,6 @@ export default function DesignRecipe({ persistedData }) {
   const setSearch = () => {
     const searchValue = searchRef.current.value;
     if (searchValue) {
-    
       const filteredIngredients = ingredientsList.filter((ingredient) =>
         ingredient.ingredient.name.includes(searchValue)
       );
@@ -128,11 +183,11 @@ export default function DesignRecipe({ persistedData }) {
       const usedItems = recipeList.map((item) => {
         return item.ingredient.name;
       });
-      
+
       const filteredIngredients = storeIngredients.filter(
         (item) => !usedItems.includes(item.ingredient.name)
       );
-    
+
       setIngredientsList(filteredIngredients);
     }
   };
@@ -141,7 +196,7 @@ export default function DesignRecipe({ persistedData }) {
     setTittle(recipe.tittle);
     descriptionRef.current = recipe.description;
     //setDescriptionValue(recipe.description);
-    const ingredients = recipe.ingredients;
+    const ingredients = updateRecipes(recipe);
     const quantity = recipe.ingredients.map((ingredient) => {
       return ingredient.quantity;
     });
@@ -175,7 +230,7 @@ export default function DesignRecipe({ persistedData }) {
     setRecipeList([]);
     setTittle("");
     descriptionRef.current = "";
-    // setDescriptionValue("");
+    //setDescriptionValue("");
     setQuantity([]);
     setIngredientsList(storeIngredients);
     console.log(recipeList, ingredients);
@@ -188,7 +243,7 @@ export default function DesignRecipe({ persistedData }) {
     });
   };
   const addToRecipe = (item) => {
-    //console.log(item._id)
+    console.log(item);
     if (deleteMode == "delete") {
       deleteIngredient(item._id);
       const filter = ingredientsList.filter(
@@ -197,12 +252,19 @@ export default function DesignRecipe({ persistedData }) {
       setIngredientsList(filter);
     }
     if (deleteMode == "chose") {
-      setRecipeList((prev) => [...prev, item]);
-      const filter = ingredientsList.filter(
-        (ingredient) =>
-          ingredient?.ingredient?.name !== item?.ingredient?.name || item.name
-      );
-      setIngredientsList(filter);
+      if (
+        recipeList.some(
+          (_item) => _item.ingredient.name === item.ingredient.name
+        )
+      ) {
+      } else {
+        setRecipeList((prev) => [...prev, item]);
+        const filter = ingredientsList.filter(
+          (ingredient) =>
+            ingredient?.ingredient?.name !== item?.ingredient?.name || item.name
+        );
+        setIngredientsList(filter);
+      }
     }
     if (deleteMode == "edit") {
       setEditableIngredient(item);
@@ -210,7 +272,7 @@ export default function DesignRecipe({ persistedData }) {
       //console.log(item)
     }
   };
-  const removeItem = (item) => {
+  const removeItem = (item, index) => {
     if (
       ingredientsList.some(
         (ingredient) => ingredient?.ingredient?.name === item?.ingredient?.name // || item.name
@@ -220,6 +282,15 @@ export default function DesignRecipe({ persistedData }) {
         (ingredient) => ingredient?.ingredient?.name !== item?.ingredient?.name
       );
       console.log(recipeList, "filter", filter, item);
+      setQuantity((prev) => {
+        let quantity = prev ? [...prev] : [];
+        console.log(quantity);
+        const newquantity = [
+          ...quantity.slice(0, index),
+          ...quantity.slice(index + 1),
+        ];
+        return newquantity;
+      });
       setRecipeList(filter);
     } else {
       setIngredientsList((prev) => [...prev, item]);
@@ -227,6 +298,15 @@ export default function DesignRecipe({ persistedData }) {
         (ingredient) => ingredient?.ingredient?.name !== item?.ingredient?.name
       );
       console.log(recipeList, "filter", filter, item);
+      setQuantity((prev) => {
+        let quantity = prev ? [...prev] : [];
+        console.log(quantity);
+        const newquantity = [
+          ...quantity.slice(0, index),
+          ...quantity.slice(index + 1),
+        ];
+        return newquantity;
+      });
       setRecipeList(filter);
     }
   };
@@ -246,7 +326,7 @@ export default function DesignRecipe({ persistedData }) {
       } else {
         newQuantity[index] = 0 + min[units];
       }
-      // console.log(newQuantity)
+      console.log(newQuantity);
       return newQuantity;
     });
   };
@@ -263,9 +343,15 @@ export default function DesignRecipe({ persistedData }) {
       return newQuantity;
     });
   };
-  function  deleteHandler(recipetittle){
-    const result = window.confirm("¿Estás seguro de que deseas borrar este elemento?");
-  if (result) { deleteRecipe(recipetittle)}}
+  function deleteHandler(recipetittle) {
+    const result = window.confirm(
+      "¿Estás seguro de que deseas borrar este elemento?"
+    );
+    if (result) {
+      deleteRecipe(recipetittle);
+    }
+  }
+
   //console.log(deleteMode)
   return (
     <div className="out-container">
@@ -334,6 +420,11 @@ export default function DesignRecipe({ persistedData }) {
                     className="item"
                     key={item?._id}
                     onClick={() => addToRecipe(item)}
+                    onMouseEnter={() =>
+                      setHoveredItem(item.ingredient?.name || item.name)
+                    }
+                    onMouseLeave={() => setHoveredItem(null)}
+                    data-tooltip={hoveredItem}
                   >
                     {item.ingredient?.image || item.image}
                   </div>
@@ -348,7 +439,7 @@ export default function DesignRecipe({ persistedData }) {
 
         <div id="recipe" className="recipe">
           <div>
-              <h2>Nueva Receta</h2>
+            <h2>Nueva Receta</h2>
             <div className="out-container">
               <input
                 type="text"
@@ -394,7 +485,7 @@ export default function DesignRecipe({ persistedData }) {
                     <div
                       className="itemQ"
                       style={{ margin: "0.3rem" }}
-                      onClick={() => removeItem(item)}
+                      onClick={() => removeItem(item, index)}
                     >
                       {item?.ingredient?.name}
                     </div>
@@ -426,7 +517,7 @@ export default function DesignRecipe({ persistedData }) {
             </div>
           </div>
         </div>
-        <div id="description" className="description" key={"htr5"}>
+        <div id="description" className="description">
           <div>
             <textarea
               type="text"
@@ -451,8 +542,7 @@ export default function DesignRecipe({ persistedData }) {
           </button>
         </div>
       </div>
-      
-     
+
       <div className="ReceipLibrary">
         {storeRecipes.map((recipe) => {
           total = 0;
@@ -480,38 +570,71 @@ export default function DesignRecipe({ persistedData }) {
                   {recipe?.portions}👤
                 </div>
                 <div
-                  style={{ display: "flex", justifyContent: "flex-start" , fontSize:"1.8rem"}}
-                  onClick={() =>deleteHandler(recipe.tittle) }
+                  style={{
+                    display: "flex",
+                    justifyContent: "flex-start",
+                    fontSize: "1.8rem",
+                  }}
+                  onClick={() => deleteHandler(recipe.tittle)}
                 >
                   🗑
                 </div>
-                <div className="in-container2">
+                <div className="in-2container">
                   {recipe?.ingredients?.map((ingredient, index) => {
+                    //   const actualIngredient = ingredientsList.find((ing) => {
+                    {
+                      /* console.log(
+                        ing.ingredient.name === ingredient.ingredient.name,
+                        ing.ingredient.name,
+                        ingredient.name
+                      ); */
+                    }
+                    {
+                      /* return ing.ingredient.name === ingredient.ingredient.name;
+                    }); */
+                    }
+                    {
+                      /* const price = actualIngredient?.ingredient.grPrice;
+                    // console.log(price, actualIngredient);
+                    if (price) {
+                      total += price * ingredient.quantity;
+                    } else { */
+                    }
                     total +=
                       ingredient.ingredient?.grPrice * ingredient.quantity;
+
                     return (
                       <div className="in-container" key={ingredient._id}>
                         <div className="item2">
                           {ingredient?.ingredient?.image}
-                          {ingredient?.ingredient?.name}{" "}
+                          {ingredient?.ingredient?.name}
                         </div>
                         {/* <div className="item2">{ingredient.ingredient?.name} </div> */}
-                        <div className="item">{ingredient?.quantity} </div>
-                        <div className="baseMarc">
-                          {ingredient?.ingredient?.units} ={" "}
+                        <div className="item">
+                          <div className="baseMarc">
+                            {ingredient?.quantity}{" "}
+                            {ingredient?.ingredient?.units}{" "}
+                          </div>
                         </div>
+                        =
                         <div className="itemTotal">
                           $
-                          {(
-                            ingredient.ingredient?.grPrice *
-                            ingredient?.quantity
-                          ).toFixed(0)}{" "}
+                          {
+                            /* price
+                            ? price * ingredient.quantity
+                            :  */
+                            (
+                              ingredient.ingredient?.grPrice *
+                              ingredient?.quantity
+                            ).toFixed(0)
+                          }
                         </div>
                       </div>
                     );
                   })}
                   <div key={recipe.key} className="itemTotal">
-                    Costo Total:<div  className="item2">${total.toFixed(0)}</div>
+                    Costo Total:
+                    <div className="item2">${total.toFixed(0)}</div>
                     <div
                       style={{
                         display: "flex",

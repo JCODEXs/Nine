@@ -3,11 +3,11 @@ import styles from "./recepiDesign.css";
 import axios from "axios";
 
 import { usePantry, addIngredient } from "@/pantry";
-const units = ["und", "g", "gr", "Gr","GR","ml","Ml", "ML"];
-const min = { gr: 25, und: 1, g: 1, ml: 25, Ml:50, GR: 100, ML: 100, Gr:50 };
+const units = ["und", "g", "gr", "Gr", "GR", "ml", "Ml", "ML"];
+const min = { gr: 25, und: 1, g: 1, ml: 25, Ml: 50, GR: 100, ML: 100, Gr: 50 };
 
 export default function Form({ setIngredients, editableIngredient }) {
-  const { addStoreIngredient } = usePantry();
+  const { addStoreIngredient, deleteIngredient } = usePantry();
   console.log(editableIngredient);
   const [formFields, setFormFields] = useState([
     { name: "", units: "", image: "", price: "" },
@@ -25,12 +25,13 @@ export default function Form({ setIngredients, editableIngredient }) {
   const handleChange = (index, event) => {
     const { name, value } = event.target;
     const values = [...formFields];
-    console.log(value,name);
+    console.log(value, name, index);
     values[index][name] = value;
     if (values[index].price) {
       if (values[index].units == "und" || values[index].units == "tbsp") {
         const newPrice = values[index].price;
         values[index].grPrice = newPrice;
+        console.log(newPrice);
       } else {
         const newPrice = values[index].price / 1000;
         values[index].grPrice = newPrice;
@@ -60,6 +61,11 @@ export default function Form({ setIngredients, editableIngredient }) {
     const id = Math.random(10) * 100000000000;
     console.log(formFields);
     event.preventDefault();
+    if (!editableIngredient) {
+      // addIngredient(formFields[0]);
+    } else {
+      deleteIngredient(editableIngredient._id);
+    }
     setIngredients((prev) => {
       if (!Array.isArray(prev)) {
         return formFields;
@@ -73,11 +79,6 @@ export default function Form({ setIngredients, editableIngredient }) {
       console.log(index, ingredient);
       addStoreIngredient([{ ingredient: ingredient, _id: id }]);
     });
-    if (!editableIngredient) {
-      // addIngredient(formFields[0]);
-    } else {
-      addStoreIngredient(formFields);
-    }
     console.log(formFields);
     setFormFields([{ name: "", units: "", image: "", price: "" }]);
   };
@@ -111,18 +112,24 @@ export default function Form({ setIngredients, editableIngredient }) {
               required
             />
 
-              <div style={{padding:"0.3rem"}}>
-                {units.map((unit) => {
-                  return (
-                    <button type="button" className="button" key={unit} value={unit} name={"units"} onClick={(event) => handleChange(index, event)}>
-                      { `${min[unit]}${unit}`}
-                    </button>
-                  );
-                })}
-              </div>
+            <div style={{ padding: "0.3rem" }}>
+              {units.map((unit) => {
+                return (
+                  <button
+                    type="button"
+                    className="button"
+                    key={unit}
+                    value={unit}
+                    name={"units"}
+                    onClick={(event) => handleChange(index, event)}
+                  >
+                    {`${min[unit]}${unit}`}
+                  </button>
+                );
+              })}
+            </div>
 
-         
-           {/* <input
+            {/* <input
               type=""
               name="units"
               list="units"

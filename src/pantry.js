@@ -28,12 +28,13 @@ const pantry = (set) => ({
     //   portions: 3,
     // },
   ],
+  programing: [],
   // draggedTask: null,
   // tasksInOngoing: 0,
   addStoreIngredient: (ingredients) =>
     set(
       produce((store) => {
-        //   console.log(ingredients);
+        console.log(ingredients);
         ingredients?.forEach((ingredient) => {
           const index = store.ingredients.findIndex(
             (item) => item._id === ingredient._id
@@ -51,6 +52,65 @@ const pantry = (set) => ({
       false,
       "addIngredient"
     ),
+  addStorePrograming: (program) =>
+    set(
+      produce((store) => {
+        //   console.log(Object.values(program), program);
+        //   Object.entries(program)?.forEach(([day, recipes]) => {
+        //     console.log(day, recipes);
+
+        //     let existingDay =
+        //       store?.programing &&
+        //       store?.programing?.find((item) => item.day === day);
+        //     if (!existingDay) {
+        //       console.log("new day", day);
+        //       store.programing[day] = recipes;
+        //     } else {
+        //       // Update existing day
+        //       console.log("updating day", day);
+        //       existingDay = recipes;
+        //     }
+        //   });
+        // }),
+
+        // store.programing = program;
+        store.programing.push(program);
+      }),
+      false,
+      "addProgram"
+    ),
+  deletePrograming: () =>
+    set(
+      produce(
+        (store) => {
+          store.programing = [];
+        },
+        false,
+        "delteAll"
+      )
+    ),
+  // addStorePrograming: (program) =>
+  //   set(
+  //     produce((store) => {
+  //       console.log(Object.values(program), program);
+  //       Object.entries(program,key)?.[0]?.forEach((program) => {
+  //         console.log(program);
+
+  //         const index = store.programing.findIndex(
+  //           (item) => item.tittle === program.tittle
+  //         );
+  //         if (index === -1) {
+  //           console.log("new item", program);
+  //           store.programing.push(program);
+  //         } else {
+  //           //  console.log("updating item", program);
+  //           store.programing[key] = program;
+  //         }
+  //       });
+  //     }),
+  //     false,
+  //     "addProgram"
+  //   ),
   addStoreRecipe: (_recipe) =>
     set(
       produce((store) => {
@@ -64,13 +124,13 @@ const pantry = (set) => ({
             const index = store.recipes.findIndex(
               (item) => item.tittle === _recipe.tittle
             );
-            console.log(index, _recipe, recipe);
+            console.log(index, _recipe.ingredients[0], recipe.ingredients[0]);
             if (index === -1) {
               console.log("new item", _recipe);
               store.recipes.push(_recipe);
               addRecipe(_recipe);
             } else {
-              console.log("updating item", _recipe, store.recipes);
+              console.log("updating item", _recipe, recipe.ingredients);
               // alert("modificando")
               store.recipes[index] = _recipe;
             }
@@ -81,12 +141,15 @@ const pantry = (set) => ({
       "addRecipe"
     ),
   deleteIngredient: (id) => {
-    console.log(id);
-    set((store) => ({
-      ingredients: store.ingredients.filter(
-        (ingredient) => ingredient._id !== id
-      ),
-    }));
+    // console.log(id);
+    set(
+      produce((store) => {
+        //console.log(store.ingredients);
+        store.ingredients = store.ingredients.filter(
+          (ingredient) => ingredient?._id !== id
+        );
+      })
+    );
   },
   deleteAllIngredient: (name) =>
     set((store) => ({
@@ -107,6 +170,7 @@ const pantry = (set) => ({
       set((store) => ({
         recipes: state.state.recipes,
         ingredients: state.state.ingredients,
+        programing: state.state.programing,
       }));
     }
   },
@@ -164,7 +228,7 @@ const log = (config) => (set, get, api) =>
   );
 
 export const usePantry = create(
-  subscribeWithSelector(log(persist(devtools(pantry), { name: "pantry" })))
+  subscribeWithSelector(log(persist(devtools(pantry), { name: "Devtools" })))
 );
 
 // useStore.subscribe(
